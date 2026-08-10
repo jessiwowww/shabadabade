@@ -1,0 +1,182 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { motion } from "framer-motion";
+import { isAutoloadSuppressed } from "../lib/anchorScroll";
+
+/*
+  Griglia Masonry vera (stile Tumblr/Pinterest): colonne a larghezza
+  fissa, altezza libera, nessun crop — ogni immagine mantiene le sue
+  proporzioni naturali.
+
+  Animazione filtro in due tempi: gli elementi che non corrispondono
+  più al filtro restano montati per un attimo con fade/scale-out, poi
+  vengono rimossi e i superstiti si riorganizzano con la layout
+  animation di Framer Motion.
+*/
+
+const EXIT_MS = 240;
+
+/*
+  Caricamento a blocchi stile Pinterest: la griglia parte con BATCH
+  lavori e ne aggiunge altri quando lo scroll si avvicina al fondo
+  (sentinella + IntersectionObserver). Così con centinaia di lavori la
+  home resta una vetrina e le sezioni sotto restano raggiungibili.
+  L'auto-load è sospeso durante gli scroll programmatici alle ancore
+  (vedi src/lib/anchorScroll.js).
+*/
+const BATCH = 12;
+
+function useFilterTransition(filtered) {
+  const [displayed, setDisplayed] = useState(filtered);
+  const [leavingIds, setLeavingIds] = useState(() => new Set());
+  const displayedRef = useRef(displayed);
+  displayedRef.current = displayed;
+
+  useEffect(() => {
+    const keep = new Set(filtered.map((p) => p.id));
+    const toLeave = displayedRef.current.filter((p) => !keep.has(p.id));
+
+    if (toLeave.length === 0) {
+      setDisplayed(filtered);
+      setLeavingIds(new Set());
+      return;
+    }
+
+    setLeavingIds(new Set(toLeave.map((p) => p.id)));
+    const t = setTimeout(() => {
+      setDisplayed(filtered);
+      setLeavingIds(new Set());
+    }, EXIT_MS);
+    return () => clearTimeout(t);
+  }, [filtered]);
+
+  return { displayed, leavingIds };
+}
+
+function ProjectCard({ project, leaving, onOpen }) {
+  const { immagine } = project;
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={
+        leaving ? { opacity: 0, scale: 0.88 } : { opacity: 1, scale: 1 }
+      }
+      transition={{
+        layout: { type: "spring", stiffness: 260, damping: 30 },
+        duration: EXIT_MS / 1000,
+      }}
+    >
+      <button
+        type="button"
+        data-interactive
+        onClick={() => onOpen(project)}
+        className="group relative block w-full overflow-hidden rounded-xl bg-sb-surface text-left"
+        aria-label={`Open project: ${project.titolo}`}
+      >
+        {project.video ? (
+          <video
+            src={project.video.url}
+            poster={immagine.url}
+            width={project.video.larghezza}
+            height={project.video.altezza}
+            muted
+            loop
+            autoPlay
+            playsInline
+            preload="metadata"
+            className="block h-auto w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          />
+        ) : (
+          <img
+            src={immagine.url}
+            alt={project.titolo}
+            width={immagine.larghezza}
+            height={immagine.altezza}
+            loading="lazy"
+            decoding="async"
+            className="block h-auto w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          />
+        )}
+        {/* Overlay titolo su hover: il gradiente è sempre nero, quindi
+            il testo resta bianco fisso a prescindere dal tema */}
+        <span className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/75 via-black/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <span>
+            <span className="block font-display text-lg font-semibold text-white">
+              {project.titolo}
+            </span>
+            <span className="mt-0.5 block text-xs text-white/70">
+              {project.tags.join(" · ")}
+            </span>
+          </span>
+        </span>
+      </button>
+    </motion.div>
+  );
+}
+
+export default function Grid({ projects, loading, onOpen }) {
+  const [visibleCount, setVisibleCount] = useState(BATCH);
+  const sentinelRef = useRef(null);
+
+  // nuovo elenco (filtri cambiati o dati arrivati): riparti dal primo blocco
+  useEffect(() => setVisibleCount(BATCH), [projects]);
+
+  const hasMore = visibleCount < projects.length;
+  // memo obbligatorio: un'identità nuova a ogni render farebbe
+  // ripartire all'infinito la transizione di uscita del filtro
+  // (card a opacità zero mai rimosse = buchi nella griglia)
+  const visible = useMemo(
+    () => projects.slice(0, visibleCount),
+    [projects, visibleCount]
+  );
+  const { displayed, leavingIds } = useFilterTransition(visible);
+
+  useEffect(() => {
+    if (!hasMore || !sentinelRef.current) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting) && !isAutoloadSuppressed()) {
+          setVisibleCount((c) => Math.min(c + BATCH, projects.length));
+        }
+      },
+      { rootMargin: "600px 0px" }
+    );
+    io.observe(sentinelRef.current);
+    return () => io.disconnect();
+  }, [hasMore, projects.length]);
+
+  return (
+    <section id="lavori" className="scroll-mt-12 px-5 py-14 sm:px-8 lg:px-12">
+      <h2 className="mb-6 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        Work
+      </h2>
+
+      {loading ? (
+        <p className="text-sb-ink-soft">Loading…</p>
+      ) : displayed.length === 0 ? (
+        <p className="text-sb-ink-soft">Nothing with these tags (yet).</p>
+      ) : (
+        <>
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 0: 1, 560: 2, 1024: 3, 1600: 4 }}
+          >
+            <Masonry gutter="1.1rem">
+              {displayed.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  leaving={leavingIds.has(project.id)}
+                  onOpen={onOpen}
+                />
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
+          {hasMore && (
+            <div ref={sentinelRef} aria-hidden="true" className="h-1" />
+          )}
+        </>
+      )}
+    </section>
+  );
+}
