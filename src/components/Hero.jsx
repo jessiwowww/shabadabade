@@ -23,10 +23,12 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="flex min-h-[82vh] flex-col justify-center px-5 pb-16 pt-28 sm:px-8 lg:px-12 lg:py-16"
+      className="flex min-h-[82vh] flex-col justify-center px-5 pb-16 pt-28 sm:px-8 md:py-16 lg:px-12"
     >
-      <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-14">
-      <div className="lg:flex-1">
+      {/* affiancate già da 768px: sotto, la foto prende tutta la
+          colonna così il suo bordo sinistro è allineato al nome */}
+      <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12 lg:gap-14">
+      <div className="md:flex-1">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -70,7 +72,7 @@ export default function Hero() {
         initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.15 }}
-        className="w-full max-w-[26rem] self-end lg:max-w-[30rem] lg:flex-1 lg:self-center"
+        className="w-full md:max-w-[30rem] md:flex-1"
       >
         {fotoMancante ? (
           <HeroArtwork />

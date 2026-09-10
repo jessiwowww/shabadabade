@@ -20,7 +20,13 @@ const OPZIONI = [
 export default function ThemeSwitcher({ mode, setMode }) {
   return (
     <div
-      className="fixed right-4 top-4 z-40 flex items-center gap-1 rounded-full border border-sb-ink/15 bg-sb-surface/80 px-1.5 py-1 backdrop-blur"
+      /*
+        Su telefono in alto non ci sta: insieme alla navigazione supera
+        la larghezza dello schermo e le due barre si accavallano.
+        Sotto a sinistra è libero (il bottone filtri è a destra) ed è
+        comodo da raggiungere col pollice.
+      */
+      className="fixed bottom-5 left-5 z-40 flex items-center gap-1 rounded-full border border-sb-ink/15 bg-sb-surface/80 px-1.5 py-1 backdrop-blur lg:bottom-auto lg:left-auto lg:right-4 lg:top-4"
       role="group"
       aria-label="Site colour"
     >
