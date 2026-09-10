@@ -98,6 +98,19 @@ export default {
       validation: (r) => r.required(),
     },
     {
+      /*
+        Lo slug è l'indirizzo pubblico del progetto
+        (sharonbertoncello.com/projects/<slug>): premi "Generate" e lo
+        ricava dal titolo. Meglio non cambiarlo dopo la pubblicazione,
+        o i link già condivisi smettono di funzionare.
+      */
+      name: "slug",
+      title: "Web address",
+      type: "slug",
+      options: { source: "titolo", maxLength: 80 },
+      validation: (r) => r.required(),
+    },
+    {
       name: "copertina",
       title: "Cover",
       type: "image",

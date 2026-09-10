@@ -1,7 +1,7 @@
 /*
   Dati mock dei progetti (fallback finché Sanity è vuoto).
   Stessa shape dello schema Sanity: { id, immagine, titolo, disciplina,
-  tags, descrizione, data, ordine } — vedi src/hooks/useProjects.js.
+  tags, descrizione, data, ordine } — vedi src/lib/content.js.
 
   `disciplina` è il mondo curato (design | illustration | music, vedi
   src/data/disciplines.js): filtra la griglia dal selettore e dai link
@@ -81,8 +81,8 @@ export const PROJECTS = [
     /*
       Mix con audio: `embedAudio` è la pagina pubblica del mix
       (SoundCloud / Mixcloud / YouTube). Il sito la converte nel player
-      da incorporare — vedi src/lib/embeds.js. URL placeholder: finché
-      Sharon non incolla quello vero, il player mostra "not found".
+      da incorporare. Il player non è ancora renderizzato da nessuna
+      parte: il campo è predisposto per quando decideremo dove mostrarlo.
     */
     id: "basement-tapes-01",
     titolo: "Basement Tapes 01",

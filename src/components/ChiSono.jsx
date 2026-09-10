@@ -1,7 +1,9 @@
-import { useChiSono } from "../hooks/useChiSono";
-
-export default function ChiSono() {
-  const { foto, bio } = useChiSono();
+/*
+  Foto e bio arrivano dal server (documento "About" su Sanity, con
+  fallback ai contenuti di default): vedi src/lib/content.js.
+*/
+export default function ChiSono({ about }) {
+  const { foto, bio } = about;
 
   return (
     <section id="chi-sono" className="scroll-mt-12 px-5 py-14 sm:px-8 lg:px-12">

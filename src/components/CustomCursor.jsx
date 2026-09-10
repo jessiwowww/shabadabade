@@ -45,11 +45,14 @@ export default function CustomCursor() {
   return (
     <motion.div
       aria-hidden="true"
-      // pointer-events-none + z-index basso: non intercetta mai i click
-      className="pointer-events-none fixed left-0 top-0 z-[5]"
+      // pointer-events-none + z-index basso: non intercetta mai i click.
+      // text-sb-accent: i disegni usano currentColor, così seguono il tema
+      className="pointer-events-none fixed left-0 top-0 z-[5] text-sb-accent"
       style={{ x: springX, y: springY, opacity: visible ? 1 : 0 }}
     >
-      <Illo size={54} />
+      {/* i disegni hanno margine dentro il loro riquadro: serve una
+          misura generosa perché si leggano */}
+      <Illo size={92} />
     </motion.div>
   );
 }

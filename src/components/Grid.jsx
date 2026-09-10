@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import Masonry from "react-responsive-masonry";
 import { motion } from "framer-motion";
 import { isAutoloadSuppressed } from "../lib/anchorScroll";
+import { useColumnCount } from "../hooks/useColumnCount";
 
 /*
   Griglia Masonry vera (stile Tumblr/Pinterest): colonne a larghezza
@@ -118,6 +119,7 @@ function ProjectCard({ project, leaving, onOpen }) {
 export default function Grid({ projects, loading, onOpen }) {
   const [visibleCount, setVisibleCount] = useState(BATCH);
   const sentinelRef = useRef(null);
+  const colonne = useColumnCount();
 
   // nuovo elenco (filtri cambiati o dati arrivati): riparti dal primo blocco
   useEffect(() => setVisibleCount(BATCH), [projects]);
@@ -158,20 +160,16 @@ export default function Grid({ projects, loading, onOpen }) {
         <p className="text-sb-ink-soft">Nothing with these tags (yet).</p>
       ) : (
         <>
-          <ResponsiveMasonry
-            columnsCountBreakPoints={{ 0: 1, 560: 2, 1024: 3, 1600: 4 }}
-          >
-            <Masonry gutter="1.1rem">
-              {displayed.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  leaving={leavingIds.has(project.id)}
-                  onOpen={onOpen}
-                />
-              ))}
-            </Masonry>
-          </ResponsiveMasonry>
+          <Masonry columnsCount={colonne} gutter="1.1rem">
+            {displayed.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                leaving={leavingIds.has(project.id)}
+                onOpen={onOpen}
+              />
+            ))}
+          </Masonry>
           {hasMore && (
             <div ref={sentinelRef} aria-hidden="true" className="h-1" />
           )}

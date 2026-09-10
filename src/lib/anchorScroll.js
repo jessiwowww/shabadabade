@@ -40,7 +40,11 @@ export function scrollToAnchor(anchor, { fromTop = false } = {}) {
   const attempt = (left) => {
     if (cancelled) return;
     const el = document.querySelector(anchor);
-    if (!el) return;
+    // sezione non ancora nel DOM: riprova invece di rinunciare
+    if (!el) {
+      if (left > 0) setTimeout(() => attempt(left - 1), 300);
+      return;
+    }
     const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
     const offset = el.getBoundingClientRect().top - margin;
     if (Math.abs(offset) > 10) {
@@ -55,6 +59,8 @@ export function scrollToAnchor(anchor, { fromTop = false } = {}) {
       if (left > 0) setTimeout(() => attempt(left - 1), 600);
     }
   };
-  // niente requestAnimationFrame: nei tab in background non scatta
-  setTimeout(() => attempt(5), 60);
+  // niente requestAnimationFrame: nei tab in background non scatta.
+  // Tentativi generosi: la griglia continua ad assestarsi mentre le
+  // immagini arrivano, e ogni assestamento sposta il bersaglio.
+  setTimeout(() => attempt(8), 60);
 }

@@ -14,14 +14,19 @@
   --sb-accent: #ffd23f;
 }
 
+/*
+  --font-space-grotesk e --font-inter arrivano da next/font (vedi
+  src/app/layout.js): i font sono self-hosted, niente richiesta a
+  Google al caricamento della pagina.
+*/
 @theme inline {
   --color-sb-bg: var(--sb-bg-color);
   --color-sb-surface: var(--sb-surface);
   --color-sb-ink: var(--sb-ink);
   --color-sb-ink-soft: var(--sb-ink-soft);
   --color-sb-accent: var(--sb-accent);
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -69,4 +74,19 @@ body {
 
 .sb-scroll::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--sb-ink) 45%, transparent);
+}
+
+/* Chi preferisce meno movimento non subisce le animazioni decorative. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

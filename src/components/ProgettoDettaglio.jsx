@@ -1,9 +1,14 @@
+"use client";
+
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 /*
   Dettaglio di un progetto completo: titolo, intro e contenuti a
   blocchi (testo / immagine / video) nell'ordine deciso da Sharon —
   lo stesso argomento sviscerato alternando racconto e tavole.
+  Se lo slug non esiste è la pagina a rispondere 404, non questo
+  componente.
 */
 function Blocco({ blocco }) {
   if (blocco.tipo === "testo") {
@@ -66,26 +71,8 @@ function Blocco({ blocco }) {
 
   return null;
 }
-export default function ProgettoDettaglio({ caseStudy, loading }) {
-  if (!caseStudy) {
-    return (
-      <section className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14">
-        <p className="text-sb-ink-soft">
-          {loading ? "Loading project…" : "Project not found."}
-        </p>
-        {!loading && (
-          <a
-            href="#/projects"
-            data-interactive
-            className="mt-4 inline-flex min-h-11 items-center text-sm text-sb-ink underline underline-offset-4 hover:text-sb-accent"
-          >
-            ← All projects
-          </a>
-        )}
-      </section>
-    );
-  }
 
+export default function ProgettoDettaglio({ caseStudy }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 12 }}
@@ -93,13 +80,13 @@ export default function ProgettoDettaglio({ caseStudy, loading }) {
       transition={{ duration: 0.4 }}
       className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14"
     >
-      <a
-        href="#/projects"
+      <Link
+        href="/projects"
         data-interactive
         className="inline-flex min-h-11 items-center text-sm text-sb-ink-soft hover:text-sb-accent"
       >
         ← All projects
-      </a>
+      </Link>
 
       <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
         {caseStudy.titolo}

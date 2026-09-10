@@ -1,4 +1,8 @@
+"use client";
+
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
 /*
@@ -8,7 +12,12 @@ import { AnimatePresence, motion } from "framer-motion";
   che apre un drawer dal basso (solo in home, dove c'è la griglia).
   I pin sono generati dinamicamente dai tag dei progetti; dimensione e
   opacità crescono con la frequenza d'uso (tag cloud sottile).
+
+  La pagina corrente si ricava dall'indirizzo (usePathname): le pagine
+  dei progetti montano la sidebar senza passare nulla.
 */
+
+const NESSUN_TAG_ATTIVO = new Set();
 
 // rotazione leggera ma deterministica per tag, così non cambia a ogni render
 function pinRotation(name) {
@@ -98,10 +107,12 @@ function PinList({ tags, activeTags, onToggle, onClear, compact = false }) {
 
 // La home non ha bisogno di una voce: è "S.B." stesso.
 // "About & contact" scende sotto le immagini: bio, commissioni, contatti.
-function NavLinks({ page, vertical = false }) {
+function NavLinks({ suProgetti, vertical = false }) {
   const links = [
-    { label: "Projects", href: "#/projects", active: page === "projects" },
-    { label: "About & contact", href: "#chi-sono", active: false },
+    { label: "Projects", href: "/projects", active: suProgetti },
+    // scroll={false}: allo scroll ci pensa scrollToAnchor (parte
+    // dall'alto e scende), altrimenti Next salta in cima e lo annulla
+    { label: "About & contact", href: "/#chi-sono", active: false, scroll: false },
   ];
   return (
     <nav
@@ -110,10 +121,12 @@ function NavLinks({ page, vertical = false }) {
       }
     >
       {links.map((l) => (
-        <a
+        <Link
           key={l.label}
           href={l.href}
+          scroll={l.scroll}
           data-interactive
+          aria-current={l.active ? "page" : undefined}
           className={`inline-flex min-h-8 items-center rounded-full px-3 text-[0.82rem] transition-colors ${
             l.active
               ? "font-semibold text-sb-accent"
@@ -121,32 +134,41 @@ function NavLinks({ page, vertical = false }) {
           }`}
         >
           {l.label}
-        </a>
+        </Link>
       ))}
     </nav>
   );
 }
 
-export default function TagSidebar({ page, tags, activeTags, onToggle, onClear }) {
+export default function TagSidebar({
+  tags = [],
+  activeTags = NESSUN_TAG_ATTIVO,
+  onToggle,
+  onClear,
+}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const pathname = usePathname();
+  const suProgetti = pathname?.startsWith("/projects") ?? false;
+  // i filtri esistono solo dove c'è la griglia
+  const conFiltri = !suProgetti && tags.length > 0;
 
   return (
     <>
       {/* Desktop: sidebar fissa con nav + pin, volutamente discreta */}
       <aside className="sb-scroll fixed inset-y-0 left-0 z-20 hidden w-52 flex-col overflow-y-auto border-r border-sb-ink/10 bg-sb-bg px-5 py-8 lg:flex">
-        <a
-          href="#top"
+        <Link
+          href="/"
           data-interactive
           className="font-display text-base font-bold tracking-tight text-sb-ink"
         >
-          S.B.
-        </a>
+          shabadabade
+        </Link>
 
         <div className="-ml-3 mt-3">
-          <NavLinks page={page} vertical />
+          <NavLinks suProgetti={suProgetti} vertical />
         </div>
 
-        {page === "home" && (
+        {conFiltri && (
           <>
             <h2 className="mb-5 mt-8 text-[0.65rem] uppercase tracking-[0.2em] text-sb-ink-soft">
               Filter by tag
@@ -164,35 +186,36 @@ export default function TagSidebar({ page, tags, activeTags, onToggle, onClear }
 
       {/* Mobile: mini-nav fissa in alto a sinistra */}
       <div className="fixed left-4 top-4 z-40 flex items-center gap-0.5 rounded-full border border-sb-ink/15 bg-sb-surface/80 px-1.5 py-1 backdrop-blur lg:hidden">
-        <a
-          href="#top"
+        <Link
+          href="/"
           data-interactive
-          className="inline-flex min-h-10 items-center px-2 font-display text-sm font-bold tracking-tight text-sb-ink"
+          className="inline-flex min-h-10 items-center px-2 font-display text-[0.8rem] font-bold tracking-tight text-sb-ink"
         >
-          S.B.
-        </a>
-        <a
-          href="#/projects"
+          shabadabade
+        </Link>
+        <Link
+          href="/projects"
           data-interactive
+          aria-current={suProgetti ? "page" : undefined}
           className={`inline-flex min-h-10 items-center rounded-full px-2 text-[0.8rem] ${
-            page === "projects"
-              ? "font-semibold text-sb-accent"
-              : "text-sb-ink-soft"
+            suProgetti ? "font-semibold text-sb-accent" : "text-sb-ink-soft"
           }`}
         >
           Projects
-        </a>
-        <a
-          href="#chi-sono"
+        </Link>
+        <Link
+          href="/#chi-sono"
+          scroll={false}
           data-interactive
           className="inline-flex min-h-10 items-center rounded-full px-2 text-[0.8rem] text-sb-ink-soft"
         >
-          About & contact
-        </a>
+          {/* su schermo stretto il nome lungo prende già spazio */}
+          About
+        </Link>
       </div>
 
-      {/* Mobile: bottone flottante + drawer dal basso (solo in home) */}
-      {page === "home" && (
+      {/* Mobile: bottone flottante + drawer dal basso (solo con la griglia) */}
+      {conFiltri && (
         <>
           <button
             type="button"

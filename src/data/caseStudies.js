@@ -9,7 +9,7 @@
     { tipo: "immagine", immagine: {url, larghezza, altezza}, didascalia? }
     { tipo: "video",    url, poster?, didascalia? }
 
-  Su Sanity è un array di blocchi (vedi src/hooks/useCaseStudies.js).
+  Su Sanity è un array di blocchi (vedi src/lib/content.js).
 */
 
 const img = (seed, w, h) => ({

@@ -1,11 +1,14 @@
+"use client";
+
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 /*
-  Pagina "Progetti": i lavori completi (case study), ognuno con la sua
-  copertina scelta da Sharon. Click → pagina di dettaglio con galleria
-  e file scaricabili.
+  Pagina "Projects": i lavori completi (case study), ognuno con la sua
+  copertina scelta da Sharon. Ogni progetto ha il suo indirizzo
+  (/projects/<slug>), quindi si può condividere singolarmente.
 */
-export default function Progetti({ caseStudies, loading }) {
+export default function Progetti({ caseStudies }) {
   return (
     <section className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14">
       <h1 className="mb-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
@@ -16,19 +19,18 @@ export default function Progetti({ caseStudies, loading }) {
         in between.
       </p>
 
-      {loading ? (
-        <p className="text-sb-ink-soft">Loading projects…</p>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {caseStudies.map((cs, i) => (
-            <motion.a
-              key={cs.id}
-              href={`#/projects/${cs.id}`}
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {caseStudies.map((cs, i) => (
+          <motion.div
+            key={cs.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: i * 0.07 }}
+          >
+            <Link
+              href={`/projects/${cs.slug}`}
               data-interactive
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
-              className="group overflow-hidden rounded-xl bg-sb-surface"
+              className="group block overflow-hidden rounded-xl bg-sb-surface"
             >
               <span className="block overflow-hidden">
                 <img
@@ -50,10 +52,10 @@ export default function Progetti({ caseStudies, loading }) {
                   {cs.contenuti.filter((b) => b.tipo !== "testo").length} pieces
                 </span>
               </span>
-            </motion.a>
-          ))}
-        </div>
-      )}
+            </Link>
+          </motion.div>
+        ))}
+      </div>
     </section>
   );
 }

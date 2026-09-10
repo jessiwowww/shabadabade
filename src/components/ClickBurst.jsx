@@ -12,7 +12,7 @@ import { useIsDesktop } from "../hooks/useIsDesktop";
 const INTERACTIVE_SELECTOR =
   "a, button, input, textarea, select, [role='button'], [data-interactive]";
 
-const SIZE = 52;
+const SIZE = 88;
 
 export default function ClickBurst() {
   const isDesktop = useIsDesktop();
@@ -55,7 +55,8 @@ export default function ClickBurst() {
           return (
             <motion.div
               key={b.id}
-              className="absolute left-0 top-0"
+              // text-sb-accent: i disegni usano currentColor
+              className="absolute left-0 top-0 text-sb-accent"
               initial={{
                 opacity: 0,
                 scale: 0.2,

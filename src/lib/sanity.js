@@ -2,19 +2,19 @@ import { createClient } from "@sanity/client";
 
 /*
   Client Sanity del sito (sola lettura, dataset pubblico).
-  useCdn: true → risposte dalla CDN di Sanity, veloci e cache-ate.
 
-  NOTA CORS: perché il browser possa chiamare l'API, il dominio del
-  sito va aggiunto su https://www.sanity.io/manage → progetto →
-  API → CORS origins (senza credenziali). Servono:
-    - http://localhost:5173  (sviluppo)
-    - il dominio pubblico del sito quando andrà online
-  Finché il CORS non è configurato o non ci sono contenuti, il sito
-  usa automaticamente i dati di esempio.
+  Da quando il sito è su Next.js le query girano LATO SERVER: il CORS
+  non serve più per il sito (era un vincolo del browser), resta solo
+  per lo Studio. Il projectId non è un segreto — sta in una variabile
+  d'ambiente per non doverlo cercare nel codice al cambio progetto,
+  con il valore attuale come default.
+
+  useCdn: true → risposte dalla CDN di Sanity. La freschezza dei
+  contenuti è gestita dall'ISR delle pagine (`export const revalidate`).
 */
 export const sanityClient = createClient({
-  projectId: "gdqr6s88",
-  dataset: "production",
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "gdqr6s88",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2026-07-01",
   useCdn: true,
 });
