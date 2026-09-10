@@ -158,6 +158,9 @@ export default function HomeClient({ projects, about }) {
         onOpen={openProject}
         onOpenAlbum={setAlbumProject}
         macro={macro}
+        onPickMacro={setMacro}
+        conteggiMacro={conteggiMacro}
+        totaleLavori={projects.length}
       />
       <ChiSono about={about} />
       <Commissioni onPick={pickCategory} />

@@ -292,20 +292,10 @@ export default function TagSidebar({
                   exit={{ y: "100%" }}
                   transition={{ type: "spring", stiffness: 300, damping: 32 }}
                 >
+                  {/* niente macro qui: su telefono sta già in chiaro
+                      sopra la griglia, questo cassetto è per i tag */}
                   <div className="mx-auto mb-6 h-1.5 w-12 rounded-full bg-sb-ink/25" />
-
-                  <h2 className="mb-3 text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
-                    Category
-                  </h2>
-                  <MacroSelector
-                    attiva={macro}
-                    onPick={onPickMacro}
-                    conteggi={conteggiMacro}
-                    totale={totaleLavori}
-                    orizzontale
-                  />
-
-                  <div className="mb-6 mt-8 flex items-center justify-between">
+                  <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
                       Filter by tag
                     </h2>

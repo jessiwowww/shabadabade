@@ -3,6 +3,7 @@ import Masonry from "react-responsive-masonry";
 import { motion } from "framer-motion";
 import { isAutoloadSuppressed } from "../lib/anchorScroll";
 import { useColumnCount } from "../hooks/useColumnCount";
+import MacroSelector from "./MacroSelector.jsx";
 
 /*
   Griglia Masonry vera (stile Tumblr/Pinterest): colonne a larghezza
@@ -140,7 +141,16 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
   );
 }
 
-export default function Grid({ projects, loading, onOpen, onOpenAlbum, macro }) {
+export default function Grid({
+  projects,
+  loading,
+  onOpen,
+  onOpenAlbum,
+  macro,
+  onPickMacro,
+  conteggiMacro,
+  totaleLavori = 0,
+}) {
   const [visibleCount, setVisibleCount] = useState(BATCH);
   const sentinelRef = useRef(null);
   const colonne = useColumnCount();
@@ -175,9 +185,27 @@ export default function Grid({ projects, loading, onOpen, onOpenAlbum, macro }) 
   return (
     <section id="lavori" className="scroll-mt-12 px-5 py-14 sm:px-8 lg:px-12">
       {/* il titolo è la macro attiva: "Work" solo quando non filtri */}
-      <h2 className="mb-6 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+      <h2 className="mb-4 font-display text-2xl font-bold tracking-tight sm:text-3xl">
         {macro ?? "Work"}
       </h2>
+
+      {/*
+        Livello 1 in chiaro sopra la griglia: sotto i 1024px la sidebar
+        non c'è, e lasciarlo solo dentro il cassetto dei filtri lo
+        rendeva invisibile su telefono. È una scelta di contesto, non
+        un filtro di raffinamento: deve stare in vista.
+      */}
+      {onPickMacro && (
+        <div className="mb-6 lg:hidden">
+          <MacroSelector
+            attiva={macro}
+            onPick={onPickMacro}
+            conteggi={conteggiMacro}
+            totale={totaleLavori}
+            orizzontale
+          />
+        </div>
+      )}
 
       {loading ? (
         <p className="text-sb-ink-soft">Loading…</p>
