@@ -49,9 +49,9 @@ export default function Hero() {
             anche currentColor diventa trasparente, e la seconda metà
             sparirebbe.
           */}
-          shaba
+          <span className="text-sb-accent">sha</span>
           <span className="text-transparent [-webkit-text-stroke:2px_var(--sb-ink)]">
-            dabade
+            badabade
           </span>
         </motion.h1>
 
