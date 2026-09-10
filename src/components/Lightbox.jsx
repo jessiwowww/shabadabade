@@ -18,6 +18,7 @@ export default function Lightbox({
   onClose,
   onNavigate,
   onTagPick,
+  onOpenAlbum,
 }) {
   const project = index != null ? projects[index] : null;
 
@@ -156,6 +157,21 @@ export default function Lightbox({
                   );
                 })}
               </div>
+              {(project.album?.length ?? 0) > 0 && (
+                <button
+                  type="button"
+                  data-interactive
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenAlbum(project);
+                  }}
+                  className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-sb-ink/25 px-4 text-sm transition-colors hover:border-sb-accent hover:text-sb-accent"
+                >
+                  See the album
+                  <span className="text-sb-ink-soft">{project.album.length}</span>
+                </button>
+              )}
+
               <p className="mt-4 text-sm leading-relaxed text-sb-ink-soft">
                 {project.descrizione}
               </p>

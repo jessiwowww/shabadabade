@@ -54,8 +54,9 @@ function useFilterTransition(filtered) {
   return { displayed, leavingIds };
 }
 
-function ProjectCard({ project, leaving, onOpen }) {
+function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
   const { immagine } = project;
+  const album = project.album ?? [];
   return (
     <motion.div
       layout
@@ -68,11 +69,15 @@ function ProjectCard({ project, leaving, onOpen }) {
         duration: EXIT_MS / 1000,
       }}
     >
+      {/* il contenitore è un div, non un bottone: dentro ci sta anche
+          il pulsante dell'album, e un bottone dentro un bottone non è
+          HTML valido */}
+      <div className="group relative overflow-hidden rounded-xl bg-sb-surface">
       <button
         type="button"
         data-interactive
         onClick={() => onOpen(project)}
-        className="group relative block w-full overflow-hidden rounded-xl bg-sb-surface text-left"
+        className="block w-full text-left"
         aria-label={`Open project: ${project.titolo}`}
       >
         {project.video ? (
@@ -112,11 +117,30 @@ function ProjectCard({ project, leaving, onOpen }) {
           </span>
         </span>
       </button>
+
+      {/* Album: apribile direttamente dalla griglia, senza passare
+          dal lavoro. Il numero dice quante cose ci sono dentro. */}
+      {album.length > 0 && (
+        <button
+          type="button"
+          data-interactive
+          onClick={() => onOpenAlbum(project)}
+          aria-label={`Open the album of ${project.titolo} — ${album.length} items`}
+          className="absolute right-2 top-2 flex min-h-9 items-center gap-1.5 rounded-full bg-sb-bg/80 px-2.5 py-1 text-xs font-semibold text-sb-ink backdrop-blur transition-colors hover:bg-sb-bg hover:text-sb-accent"
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="4.5" y="1.5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+            <path d="M11.5 14.5h-8a2 2 0 0 1-2-2v-8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+          {album.length}
+        </button>
+      )}
+      </div>
     </motion.div>
   );
 }
 
-export default function Grid({ projects, loading, onOpen }) {
+export default function Grid({ projects, loading, onOpen, onOpenAlbum, macro }) {
   const [visibleCount, setVisibleCount] = useState(BATCH);
   const sentinelRef = useRef(null);
   const colonne = useColumnCount();
@@ -150,8 +174,9 @@ export default function Grid({ projects, loading, onOpen }) {
 
   return (
     <section id="lavori" className="scroll-mt-12 px-5 py-14 sm:px-8 lg:px-12">
+      {/* il titolo è la macro attiva: "Work" solo quando non filtri */}
       <h2 className="mb-6 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-        Work
+        {macro ?? "Work"}
       </h2>
 
       {loading ? (
@@ -167,6 +192,7 @@ export default function Grid({ projects, loading, onOpen }) {
                 project={project}
                 leaving={leavingIds.has(project.id)}
                 onOpen={onOpen}
+                onOpenAlbum={onOpenAlbum}
               />
             ))}
           </Masonry>

@@ -1,11 +1,11 @@
 /*
   Dati mock dei progetti (fallback finché Sanity è vuoto).
-  Stessa shape dello schema Sanity: { id, immagine, titolo, disciplina,
-  tags, descrizione, data, ordine } — vedi src/lib/content.js.
+  Stessa shape dello schema Sanity: { id, immagine, titolo, macro,
+  tags, descrizione, data, ordine, album } — vedi src/lib/content.js.
 
-  `disciplina` è il mondo curato (design | illustration | music, vedi
-  src/data/disciplines.js): filtra la griglia dal selettore e dai link
-  diretti tipo #/music.
+  `macro` è il livello 1: un numero ("1".."6") il cui significato vive
+  in src/data/macroCategories.js. Nel database restano numeri, così
+  rinominare una categoria non tocca i contenuti.
 
   `tags` sono stringhe libere IN INGLESE: la lista dei pin viene sempre
   derivata da qui, mai hardcodata, e si restringe al mondo attivo.
@@ -25,18 +25,31 @@ export const PROJECTS = [
   {
     id: "flowers-for-marta",
     titolo: "Flowers for Marta",
-    disciplina: "illustration",
+    macro: "3",
     immagine: img("sb-fiori", 800, 1200),
     tags: ["invitation", "illustration", "wedding"],
     descrizione:
       "Invitation suite for a September wedding: hand-drawn flowers, rough paper, no gold foil.",
     data: "2026-03-01",
     ordine: 1,
+    /*
+      ALBUM (livello 3): le foto in più stanno DENTRO la copertina,
+      non come contenuti separati. Sharon le carica tutte in una volta
+      nello stesso documento; in griglia compare il numero, e si
+      sfogliano senza uscire dalla galleria.
+      Ogni voce può essere un'immagine o un video.
+    */
+    album: [
+      { tipo: "immagine", immagine: img("sb-fiori-a", 1200, 800), didascalia: "The full suite laid out." },
+      { tipo: "immagine", immagine: img("sb-fiori-b", 900, 1200), didascalia: "Envelope liner." },
+      { tipo: "immagine", immagine: img("sb-fiori-c", 1000, 1000) },
+      { tipo: "immagine", immagine: img("sb-fiori-d", 1400, 900), didascalia: "On the table, the morning of." },
+    ],
   },
   {
     id: "bar-luna",
     titolo: "Bar Luna",
-    disciplina: "design",
+    macro: "1",
     immagine: img("sb-barluna", 900, 900),
     tags: ["logo", "brand identity", "food"],
     descrizione:
@@ -47,7 +60,7 @@ export const PROJECTS = [
   {
     id: "snake-and-dagger",
     titolo: "Snake & dagger",
-    disciplina: "illustration",
+    macro: "3",
     immagine: img("sb-serpente", 640, 1400),
     tags: ["tattoo", "fine line"],
     descrizione:
@@ -58,7 +71,7 @@ export const PROJECTS = [
   {
     id: "brixton-market",
     titolo: "Brixton Market",
-    disciplina: "illustration",
+    macro: "2",
     immagine: img("sb-brixton", 800, 1120),
     tags: ["local graphics", "poster", "illustration"],
     descrizione:
@@ -69,7 +82,7 @@ export const PROJECTS = [
   {
     id: "tee-slow-days",
     titolo: "“Slow Days” tee",
-    disciplina: "illustration",
+    macro: "3",
     immagine: img("sb-slowdays", 1000, 800),
     tags: ["t-shirt", "illustration"],
     descrizione:
@@ -86,7 +99,7 @@ export const PROJECTS = [
     */
     id: "basement-tapes-01",
     titolo: "Basement Tapes 01",
-    disciplina: "music",
+    macro: "6",
     immagine: img("sb-mix01", 1000, 1000),
     embedAudio: "https://soundcloud.com/sharonbertoncello/basement-tapes-01",
     tags: ["dj set", "house", "vinyl"],
@@ -98,7 +111,7 @@ export const PROJECTS = [
   {
     id: "radio-notte-cover",
     titolo: "Radio Notte",
-    disciplina: "illustration",
+    macro: "2",
     immagine: img("sb-radionotte", 900, 900),
     tags: ["illustration", "music", "cover art"],
     descrizione:
@@ -109,29 +122,47 @@ export const PROJECTS = [
   {
     id: "forno-e-co",
     titolo: "Forno & Co.",
-    disciplina: "design",
+    macro: "1",
     immagine: img("sb-forno", 1280, 720),
     tags: ["logo", "brand identity", "food"],
     descrizione:
       "Full identity for a bakery: logo, bread wrap, stamps and flour-dusted aprons.",
     data: "2025-06-18",
     ordine: 8,
+    album: [
+      { tipo: "immagine", immagine: img("sb-forno-a", 1200, 900), didascalia: "The stamp that became the logo." },
+      { tipo: "immagine", immagine: img("sb-forno-b", 900, 1200) },
+      { tipo: "immagine", immagine: img("sb-forno-c", 1280, 720), didascalia: "Signage going up." },
+    ],
   },
   {
     id: "night-shift-residency",
     titolo: "Night Shift — monthly residency",
-    disciplina: "music",
+    macro: "6",
     immagine: img("sb-nightshift", 800, 1150),
     tags: ["club night", "flyer", "dj set"],
     descrizione:
       "A monthly night I run in Peckham: I pick the records and draw the flyers. Doors at ten, no guest list, good sound.",
     data: "2026-04-20",
     ordine: 9,
+    // album misto: immagini + un video, per verificare i formati insieme
+    album: [
+      { tipo: "immagine", immagine: img("sb-night-a", 900, 1200), didascalia: "Flyer, February." },
+      {
+        tipo: "video",
+        url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        poster: img("sb-night-v", 1280, 720),
+        didascalia: "Last hour, lights already up.",
+      },
+      { tipo: "immagine", immagine: img("sb-night-b", 1200, 800), didascalia: "The room at eleven." },
+      { tipo: "immagine", immagine: img("sb-night-c", 1000, 1000) },
+      { tipo: "immagine", immagine: img("sb-night-d", 800, 1100), didascalia: "Records that survived the night." },
+    ],
   },
   {
     id: "moth-and-moon",
     titolo: "Moth & moon",
-    disciplina: "illustration",
+    macro: "3",
     immagine: img("sb-falena", 600, 1300),
     tags: ["tattoo", "fine line", "illustration"],
     descrizione:
@@ -142,7 +173,7 @@ export const PROJECTS = [
   {
     id: "street-party",
     titolo: "Neighbours' street party",
-    disciplina: "illustration",
+    macro: "5",
     immagine: img("sb-vicini", 800, 1000),
     tags: ["invitation", "local graphics"],
     descrizione:
@@ -153,7 +184,7 @@ export const PROJECTS = [
   {
     id: "editorial-roots",
     titolo: "Roots",
-    disciplina: "illustration",
+    macro: "4",
     immagine: img("sb-radici", 1200, 800),
     tags: ["illustration", "editorial"],
     descrizione:
@@ -170,7 +201,7 @@ export const PROJECTS = [
     */
     id: "warm-up-set",
     titolo: "Warm-up set, Rye Wax",
-    disciplina: "music",
+    macro: "6",
     immagine: img("sb-ryewax", 1280, 720),
     video: {
       url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
@@ -186,7 +217,7 @@ export const PROJECTS = [
   {
     id: "tee-after-hours",
     titolo: "“After Hours” tee",
-    disciplina: "illustration",
+    macro: "5",
     immagine: img("sb-nottefonda", 900, 1100),
     tags: ["t-shirt", "illustration", "music"],
     descrizione:
@@ -197,7 +228,7 @@ export const PROJECTS = [
   {
     id: "caffe-duemila",
     titolo: "Caffè Duemila",
-    disciplina: "design",
+    macro: "1",
     immagine: img("sb-duemila", 1000, 1000),
     tags: ["logo", "food", "local graphics"],
     descrizione:

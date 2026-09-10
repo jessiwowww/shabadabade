@@ -63,9 +63,28 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
 - Tre tipi di contenuto (schemi in `studio/schemas/`): **Work (grid)** →
   griglia home e pin; **Project** → pagina Projects, contenuti a blocchi
   testo/immagine/video; **About** → documento unico con foto e bio.
-- I tag sono liberi e **in inglese**: i pin della sidebar nascono da lì
-  (`src/hooks/useAllTags.js`), mai hardcodati. Le categorie di
-  `Commissioni.jsx` puntano a quegli stessi tag.
+### I tre livelli di classificazione
+
+1. **Macro categoria** (`macro`) — curata, poche voci, stabile. Nel
+   database è un **numero** (`"1"`…`"6"`); il significato vive in
+   `src/data/macroCategories.js`, così rinominare una categoria non
+   tocca i contenuti già caricati. Due numeri possono puntare alla
+   stessa etichetta: il selettore la mostra una volta e filtra su
+   entrambi. La macro attiva diventa il titolo della griglia.
+2. **Tag liberi** (`tags`) — in inglese, emergono dai contenuti. I pin
+   della sidebar nascono da lì (`src/hooks/useTags.js`), mai
+   hardcodati; le categorie di `Commissioni.jsx` puntano a quegli
+   stessi tag. Quando una macro è attiva i pin senza riscontro restano
+   visibili ma **spenti con una ✕**: la macro domina, e cliccarli non
+   svuota la griglia.
+3. **Album** (`album`) — le foto e i video "figli" stanno **dentro** al
+   documento della copertina, non come contenuti separati: si
+   trascinano molti file in una volta e non possono restare orfani.
+   Ogni foto ha la sua didascalia (è un campo dell'immagine). In
+   griglia compare il numero: si sfoglia senza aprire il lavoro.
+
+Sui video: **solo MP4 e WebM**, gli unici che i browser riproducono. Un
+`.mov` dal telefono va convertito prima di caricarlo.
 
 ## Variabili d'ambiente
 
@@ -132,8 +151,9 @@ metti `currentColor` al posto dei colori fissi, e misura il viewBox con
 
 ## Prossimi passi
 
-1. **Tassonomia a tre livelli** (in corso di definizione): macro
-   categorie numeriche, tag liberi, album dentro la copertina.
+1. **Apertura**: il trattamento del nome (`shabadabade` metà pieno metà
+   a contorno) e l'impaginazione sono provvisori — li rivede Sharon.
+   Mancano le varianti foto per `giallo` e `rosa`.
 2. **Immagini**: servire quelle di Sanity ridimensionate dalla loro CDN
    (`?w=…&auto=format`) invece che a piena risoluzione — conta molto con
    un portfolio di centinaia di foto.

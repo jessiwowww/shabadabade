@@ -1,34 +1,33 @@
 /*
   Foto di apertura: cambia insieme al tema.
 
-  Abbinamento PROVVISORIO, in attesa delle versioni definitive di
-  Sharon — la logica è la sua:
-    · temi neutri (nero, bianco) → versione con i disegni A COLORI,
-      che è quella che sui fondi neutri risalta
-    · temi colorati (le tempere) → foto in BIANCO E NERO, che non
-      litiga con il colore del fondo
+  I file in public/hero/ seguono due assi:
+    · sfondo   → `bn-` foto in bianco e nero, `tramonto-` foto al tramonto
+    · disegni  → il colore nel nome (blu, viola, verde, rosso, bianco,
+                 multicolore)
 
-  Servono quindi solo due file per partire:
-      public/hero/colori.jpg
-      public/hero/bianco-e-nero.jpg
+  L'abbinamento segue la regola di Sharon:
+    · temi neutri (nero, bianco) → foto al TRAMONTO, che sul fondo
+      neutro porta il colore
+    · temi colorati → foto in BIANCO E NERO, con i disegni dello
+      stesso colore del tema, così non litiga con il fondo
 
-  Quando ci saranno le varianti per singolo colore basta cambiare i
-  percorsi qui sotto, uno per riga. Finché i file non esistono
-  l'apertura mostra il pannello di disegni (HeroArtwork).
+  `giallo` e `rosa` non hanno disegni del loro colore: usano la
+  versione multicolore, che li contiene entrambi.
 */
 export const HERO_PHOTOS = {
-  nero: "/hero/colori.jpg",
-  bianco: "/hero/colori.jpg",
+  nero: "/hero/tramonto-bianco.jpg",
+  bianco: "/hero/tramonto-viola.jpg",
 
-  blu: "/hero/bianco-e-nero.jpg",
-  viola: "/hero/bianco-e-nero.jpg",
-  verde: "/hero/bianco-e-nero.jpg",
-  mattone: "/hero/bianco-e-nero.jpg",
-  giallo: "/hero/bianco-e-nero.jpg",
-  rosa: "/hero/bianco-e-nero.jpg",
+  blu: "/hero/bn-blu.jpg",
+  viola: "/hero/bn-viola.jpg",
+  verde: "/hero/bn-verde.jpg",
+  mattone: "/hero/bn-rosso.jpg",
+  giallo: "/hero/bn-multicolore.jpg",
+  rosa: "/hero/bn-multicolore.jpg",
 };
 
-const RIPIEGO = "/hero/bianco-e-nero.jpg";
+const RIPIEGO = "/hero/bn-multicolore.jpg";
 
 export function heroPhotoFor(nomePalette) {
   return HERO_PHOTOS[nomePalette] ?? RIPIEGO;

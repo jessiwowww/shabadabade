@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import MacroSelector from "@/components/MacroSelector.jsx";
 
 /*
   Sidebar dei tag come "pin/spille" (feature signature) + navigazione.
@@ -27,6 +28,13 @@ function pinRotation(name) {
 }
 
 function Pin({ tag, maxCount, active, onToggle, compact = false }) {
+  /*
+    Tag senza riscontro dentro la macro attiva: resta visibile ma
+    spento e segnato con una ✕, invece di sparire. Così si capisce
+    che quel tag esiste ma non in questo contesto — e cliccarlo non
+    svuota la griglia.
+  */
+  const nonDisponibile = tag.count === 0;
   const weight = maxCount > 1 ? (tag.count - 1) / (maxCount - 1) : 1;
   // versione compatta (sidebar desktop): scala tipografica ridotta;
   // nel drawer mobile restano i touch target da 44px
@@ -39,29 +47,42 @@ function Pin({ tag, maxCount, active, onToggle, compact = false }) {
     <motion.button
       type="button"
       data-interactive
-      onClick={() => onToggle(tag.name)}
+      onClick={() => !nonDisponibile && onToggle(tag.name)}
+      disabled={nonDisponibile}
       aria-pressed={active}
-      whileHover={{ scale: 1.08, rotate: 0 }}
-      whileTap={{ scale: 0.94 }}
+      whileHover={nonDisponibile ? undefined : { scale: 1.08, rotate: 0 }}
+      whileTap={nonDisponibile ? undefined : { scale: 0.94 }}
       className={`relative inline-flex items-center gap-1.5 rounded-full border font-sans transition-colors ${
         compact ? "min-h-7 px-2.5 py-0.5" : "min-h-11 px-3.5 py-1.5"
       } ${
-        active
-          ? "border-sb-accent bg-sb-accent/15 text-sb-accent"
-          : "border-sb-ink/25 bg-sb-surface text-sb-ink hover:border-sb-ink/60"
+        nonDisponibile
+          ? "cursor-not-allowed border-dashed border-sb-ink/20 bg-transparent text-sb-ink-soft"
+          : active
+            ? "border-sb-accent bg-sb-accent/15 text-sb-accent"
+            : "border-sb-ink/25 bg-sb-surface text-sb-ink hover:border-sb-ink/60"
       }`}
-      style={{ fontSize, opacity, rotate: `${pinRotation(tag.name)}deg` }}
+      style={{
+        fontSize,
+        opacity: nonDisponibile ? 0.45 : opacity,
+        rotate: `${pinRotation(tag.name)}deg`,
+      }}
     >
       {/* testa della spilla */}
       <span
         aria-hidden="true"
         className={`absolute -left-1 -top-1 rounded-full border-2 border-sb-bg shadow ${
           compact ? "h-2.5 w-2.5" : "h-3 w-3"
-        } ${active ? "bg-sb-accent" : "bg-sb-ink/70"}`}
+        } ${
+          nonDisponibile
+            ? "bg-sb-ink/25"
+            : active
+              ? "bg-sb-accent"
+              : "bg-sb-ink/70"
+        }`}
       />
       {tag.name}
       <span className={active ? "text-sb-accent/70" : "text-sb-ink-soft"}>
-        {tag.count}
+        {nonDisponibile ? "✕" : tag.count}
       </span>
     </motion.button>
   );
@@ -145,6 +166,10 @@ export default function TagSidebar({
   activeTags = NESSUN_TAG_ATTIVO,
   onToggle,
   onClear,
+  macro = null,
+  onPickMacro,
+  conteggiMacro,
+  totaleLavori = 0,
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
@@ -170,6 +195,17 @@ export default function TagSidebar({
 
         {conFiltri && (
           <>
+            {/* LIVELLO 1, sopra i pin: è una scelta di contesto */}
+            <h2 className="mb-3 mt-8 text-[0.65rem] uppercase tracking-[0.2em] text-sb-ink-soft">
+              Category
+            </h2>
+            <MacroSelector
+              attiva={macro}
+              onPick={onPickMacro}
+              conteggi={conteggiMacro}
+              totale={totaleLavori}
+            />
+
             <h2 className="mb-5 mt-8 text-[0.65rem] uppercase tracking-[0.2em] text-sb-ink-soft">
               Filter by tag
             </h2>
@@ -257,7 +293,19 @@ export default function TagSidebar({
                   transition={{ type: "spring", stiffness: 300, damping: 32 }}
                 >
                   <div className="mx-auto mb-6 h-1.5 w-12 rounded-full bg-sb-ink/25" />
-                  <div className="mb-6 flex items-center justify-between">
+
+                  <h2 className="mb-3 text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
+                    Category
+                  </h2>
+                  <MacroSelector
+                    attiva={macro}
+                    onPick={onPickMacro}
+                    conteggi={conteggiMacro}
+                    totale={totaleLavori}
+                    orizzontale
+                  />
+
+                  <div className="mb-6 mt-8 flex items-center justify-between">
                     <h2 className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
                       Filter by tag
                     </h2>

@@ -24,9 +24,31 @@ const PROJECTS_QUERY = `*[_type == "progetto"] | order(ordine asc) {
   },
   "video": video.asset->{ "url": url },
   "tags": coalesce(tags, []),
+  "macro": macro,
   descrizione,
   data,
-  ordine
+  ordine,
+  "album": coalesce(album[]{
+    _type == "image" => {
+      "tipo": "immagine",
+      "immagine": {
+        "url": asset->url,
+        "larghezza": asset->metadata.dimensions.width,
+        "altezza": asset->metadata.dimensions.height
+      },
+      didascalia
+    },
+    _type == "voceVideo" => {
+      "tipo": "video",
+      "url": video.asset->url,
+      "poster": poster.asset->{
+        "url": url,
+        "larghezza": metadata.dimensions.width,
+        "altezza": metadata.dimensions.height
+      },
+      didascalia
+    }
+  }, [])
 }`;
 
 /*
