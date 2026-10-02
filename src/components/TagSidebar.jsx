@@ -188,7 +188,7 @@ export default function TagSidebar({
         <Link
           href="/"
           data-interactive
-          className="font-nome text-base font-bold tracking-tight text-sb-ink"
+          className="font-nome text-base text-sb-ink"
         >
           shabadabade
         </Link>
@@ -218,7 +218,7 @@ export default function TagSidebar({
         <Link
           href="/"
           data-interactive
-          className="inline-flex min-h-10 items-center px-2 font-nome text-[0.8rem] font-bold tracking-tight text-sb-ink"
+          className="inline-flex min-h-10 items-center px-2 font-nome text-[0.8rem] text-sb-ink"
         >
           shabadabade
         </Link>

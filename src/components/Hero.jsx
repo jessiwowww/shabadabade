@@ -36,7 +36,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="mt-3 font-nome text-5xl font-bold leading-[0.95] tracking-tighter sm:text-7xl lg:text-[5.5rem]"
+          /* niente font-bold né spaziatura negativa: Caprasimo ha un
+             solo peso e una spaziatura sua, forzarli impasta le lettere */
+          className="mt-3 font-nome text-4xl leading-[1.05] sm:text-5xl lg:text-6xl"
         >
           <span className="text-sb-accent">sha</span>badabade
         </motion.h1>
