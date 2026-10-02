@@ -5,18 +5,17 @@ import { useEffect, useState } from "react";
   window.innerWidth, che sul server non esiste — il server disegnava
   una colonna e il browser tre, e React segnalava un errore di
   idratazione. Si parte sempre da PARTENZA e si misura dopo.
-  Mai meno di due: a colonna singola ogni foto occupava tutto lo
-  schermo del telefono.
 */
 const BREAKPOINTS = [
   { da: 1600, colonne: 4 },
   { da: 1024, colonne: 3 },
   { da: 560, colonne: 2 },
-  { da: 0, colonne: 2 },
+  { da: 0, colonne: 1 },
 ];
 
-// combacia con la colonna minima: su telefono non c'è nessun salto
-// al primo caricamento, perché il valore di partenza è già quello buono
+// valore di compromesso fra telefono e desktop: il salto al primo
+// caricamento resta di una colonna da entrambe le parti, e avviene
+// sotto l'hero
 const PARTENZA = 2;
 
 export function useColumnCount() {
