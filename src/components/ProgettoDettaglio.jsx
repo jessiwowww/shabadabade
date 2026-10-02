@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+
+const SOGLIA_TRASCINAMENTO = 80;
 
 function Blocco({ blocco }) {
   if (blocco.tipo === "testo") {
@@ -65,12 +68,32 @@ function Blocco({ blocco }) {
   return null;
 }
 
-export default function ProgettoDettaglio({ caseStudy }) {
+export default function ProgettoDettaglio({
+  caseStudy,
+  precedente,
+  successivo,
+}) {
+  const router = useRouter();
+
   return (
     <motion.article
+      key={caseStudy.slug}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
+      /* trascinamento laterale per passare al progetto vicino;
+         dragDirectionLock perché non rubi lo scorrimento verticale */
+      drag="x"
+      dragDirectionLock
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.15}
+      onDragEnd={(_, info) => {
+        if (info.offset.x < -SOGLIA_TRASCINAMENTO && successivo) {
+          router.push(`/projects/${successivo.slug}`);
+        } else if (info.offset.x > SOGLIA_TRASCINAMENTO && precedente) {
+          router.push(`/projects/${precedente.slug}`);
+        }
+      }}
       className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14"
     >
       <Link
@@ -99,6 +122,45 @@ export default function ProgettoDettaglio({ caseStudy }) {
           <Blocco key={i} blocco={blocco} />
         ))}
       </div>
+
+      {(precedente || successivo) && (
+        <nav className="mt-16 flex max-w-3xl items-start justify-between gap-6 border-t border-sb-ink/15 pt-6">
+          {precedente ? (
+            <Link
+              href={`/projects/${precedente.slug}`}
+              data-interactive
+              className="group max-w-[45%]"
+            >
+              <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-sb-ink-soft">
+                ← Previous
+              </span>
+              <span className="mt-1 block font-display font-semibold group-hover:text-sb-accent">
+                {precedente.titolo}
+              </span>
+            </Link>
+          ) : (
+            <span />
+          )}
+          {successivo && (
+            <Link
+              href={`/projects/${successivo.slug}`}
+              data-interactive
+              className="group max-w-[45%] text-right"
+            >
+              <span className="block text-[0.7rem] uppercase tracking-[0.2em] text-sb-ink-soft">
+                Next →
+              </span>
+              <span className="mt-1 block font-display font-semibold group-hover:text-sb-accent">
+                {successivo.titolo}
+              </span>
+            </Link>
+          )}
+        </nav>
+      )}
+
+      <p className="mt-6 text-xs text-sb-ink-soft/60 lg:hidden">
+        Swipe left or right for the next project
+      </p>
     </motion.article>
   );
 }

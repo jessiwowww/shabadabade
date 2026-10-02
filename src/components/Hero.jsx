@@ -38,7 +38,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.1 }}
           /* niente font-bold né spaziatura negativa: Caprasimo ha un
              solo peso e una spaziatura sua, forzarli impasta le lettere */
-          className="mt-3 font-nome text-4xl leading-[1.05] sm:text-5xl lg:text-6xl"
+          className="mt-3 font-nome text-5xl leading-[1.05] sm:text-6xl lg:text-7xl"
         >
           <span className="text-sb-accent">sha</span>badabade
         </motion.h1>
@@ -47,7 +47,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-6 max-w-md text-lg text-sb-ink-soft sm:text-xl"
+          className="mt-5 max-w-sm text-base text-sb-ink-soft"
         >
           Designer &amp; illustrator. I draw things that stick.
         </motion.p>

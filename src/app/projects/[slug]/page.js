@@ -36,13 +36,26 @@ export async function generateMetadata({ params }) {
 
 export default async function ProjectPage({ params }) {
   const { slug } = await params;
-  const caseStudy = await getCaseStudy(slug);
-  if (!caseStudy) notFound();
+  const tutti = await getCaseStudies();
+  const i = tutti.findIndex((cs) => cs.slug === slug);
+  if (i < 0) notFound();
+
+  // in tondo: dall'ultimo si torna al primo, come nel lightbox
+  const vicino = (passo) => {
+    const cs = tutti[(i + passo + tutti.length) % tutti.length];
+    return cs && cs.slug !== slug
+      ? { slug: cs.slug, titolo: cs.titolo }
+      : null;
+  };
 
   return (
     <>
       <TagSidebar />
-      <ProgettoDettaglio caseStudy={caseStudy} />
+      <ProgettoDettaglio
+        caseStudy={tutti[i]}
+        precedente={vicino(-1)}
+        successivo={vicino(1)}
+      />
     </>
   );
 }

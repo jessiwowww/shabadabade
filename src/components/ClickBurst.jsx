@@ -10,7 +10,7 @@ import { useThemeContext } from "./ThemeProvider.jsx";
 const INTERACTIVE_SELECTOR =
   "a, button, input, textarea, select, [role='button'], [data-interactive]";
 
-const SIZE = 88;
+const SIZE = 52;
 
 export default function ClickBurst() {
   const isDesktop = useIsDesktop();

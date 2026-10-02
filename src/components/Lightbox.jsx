@@ -15,6 +15,7 @@ export default function Lightbox({
   onNavigate,
   onSetIndex,
   onTagPick,
+  onPickMacro,
   onOpenAlbum,
 }) {
   const project = index != null ? projects[index] : null;
@@ -75,7 +76,13 @@ export default function Lightbox({
 
   // solo i filtri che stanno davvero agendo: quelli selezionati ma
   // ignorati qui si vedono barrati nella sidebar, non serve ripeterli
-  const contesto = [...(macro ? [macro] : []), ...(tagApplicati ?? [])];
+  const contesto = [
+    ...(macro ? [{ etichetta: macro, rimuovi: () => onPickMacro(null) }] : []),
+    ...(tagApplicati ?? []).map((tag) => ({
+      etichetta: tag,
+      rimuovi: () => onTagPick(tag),
+    })),
+  ];
 
   return (
     <AnimatePresence>
@@ -98,12 +105,19 @@ export default function Lightbox({
             <div className="sb-strip flex flex-1 items-center gap-1.5 overflow-x-auto">
               {contesto.length > 0 ? (
                 contesto.map((voce) => (
-                  <span
-                    key={voce}
-                    className="shrink-0 rounded-full border border-sb-accent/50 bg-sb-accent/10 px-2.5 py-0.5 text-[0.7rem] text-sb-accent"
+                  <button
+                    key={voce.etichetta}
+                    type="button"
+                    data-interactive
+                    onClick={voce.rimuovi}
+                    aria-label={`Remove filter: ${voce.etichetta}`}
+                    className="flex min-h-9 shrink-0 items-center gap-1.5 rounded-full border border-sb-accent/50 bg-sb-accent/10 px-3 text-[0.7rem] text-sb-accent transition-colors hover:bg-sb-accent/20"
                   >
-                    {voce}
-                  </span>
+                    {voce.etichetta}
+                    <span aria-hidden="true" className="text-sb-accent/60">
+                      ✕
+                    </span>
+                  </button>
                 ))
               ) : (
                 <span className="text-[0.7rem] text-sb-ink-soft">All work</span>

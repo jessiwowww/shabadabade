@@ -27,7 +27,7 @@ export default function MacroSelector({ attiva, onPick, conteggi }) {
             onClick={() => !vuota && onPick(isAttiva ? null : etichetta)}
             disabled={vuota}
             aria-pressed={isAttiva}
-            className={`font-display text-2xl font-bold tracking-tight transition-colors sm:text-3xl ${
+            className={`font-display text-xl font-bold tracking-tight transition-colors sm:text-2xl ${
               isAttiva
                 ? "text-sb-accent"
                 : vuota

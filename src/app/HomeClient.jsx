@@ -18,7 +18,9 @@ export default function HomeClient({ projects, about }) {
   const [macro, setMacro] = useState(null);
   // Filtro multi-selezione in OR: basta un tag attivo in comune
   const [activeTags, setActiveTags] = useState(() => new Set());
-  const [lightboxIndex, setLightboxIndex] = useState(null);
+  // il lightbox tiene l'ID, non la posizione: cambiando filtro la
+  // posizione cambierebbe sotto i piedi e salteresti a un altro lavoro
+  const [lightboxId, setLightboxId] = useState(null);
   // lavoro di cui è aperto l'album (livello 3)
   const [albumProject, setAlbumProject] = useState(null);
 
@@ -100,13 +102,24 @@ export default function HomeClient({ projects, about }) {
     document.getElementById("lavori")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const openProject = useCallback(
-    (project) => setLightboxIndex(filtered.indexOf(project)),
-    [filtered]
-  );
+  const lightboxIndex = useMemo(() => {
+    if (!lightboxId) return null;
+    const i = filtered.findIndex((p) => p.id === lightboxId);
+    return i >= 0 ? i : null;
+  }, [filtered, lightboxId]);
+
+  // il lavoro aperto è uscito dalla selezione: chiudi invece di
+  // restare appesi a un id che non c'è più
+  useEffect(() => {
+    if (lightboxId && lightboxIndex === null) setLightboxId(null);
+  }, [lightboxId, lightboxIndex]);
+
+  const openProject = useCallback((project) => setLightboxId(project.id), []);
 
   // Da un tag nel lightbox: attiva/disattiva il filtro, chiudi e
   // torna alla griglia (la lista su cui il lightbox naviga cambia)
+  // filtra senza chiudere: resti sul lavoro che stavi guardando,
+  // cambia solo la selezione che stai sfogliando
   const pickTagFromLightbox = useCallback((tag) => {
     setActiveTags((prev) => {
       const next = new Set(prev);
@@ -114,18 +127,15 @@ export default function HomeClient({ projects, about }) {
       else next.add(tag);
       return next;
     });
-    setLightboxIndex(null);
-    document.getElementById("lavori")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   const navigateLightbox = useCallback(
     (dir) => {
-      setLightboxIndex((i) => {
-        if (i == null || filtered.length === 0) return i;
-        return (i + dir + filtered.length) % filtered.length;
-      });
+      if (lightboxIndex == null || filtered.length === 0) return;
+      const i = (lightboxIndex + dir + filtered.length) % filtered.length;
+      setLightboxId(filtered[i].id);
     },
-    [filtered]
+    [filtered, lightboxIndex]
   );
 
   return (
@@ -162,13 +172,14 @@ export default function HomeClient({ projects, about }) {
         activeTags={activeTags}
         tagApplicati={tagApplicati}
         macro={macro}
-        onClose={() => setLightboxIndex(null)}
+        onClose={() => setLightboxId(null)}
         onNavigate={navigateLightbox}
-        onSetIndex={setLightboxIndex}
+        onSetIndex={(i) => setLightboxId(filtered[i]?.id ?? null)}
         onTagPick={pickTagFromLightbox}
+        onPickMacro={setMacro}
         onOpenAlbum={(p) => {
           // l'album prende il posto del lightbox, non ci si accavalla
-          setLightboxIndex(null);
+          setLightboxId(null);
           setAlbumProject(p);
         }}
       />

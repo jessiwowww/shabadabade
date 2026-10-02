@@ -56,7 +56,7 @@ export default function CustomCursor() {
         color: colore,
       }}
     >
-      <Illo size={92} />
+      <Illo size={56} />
     </motion.div>
   );
 }
