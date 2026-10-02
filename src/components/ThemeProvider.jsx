@@ -3,12 +3,8 @@
 import { createContext, useContext } from "react";
 import { useTheme } from "@/hooks/useTheme.js";
 
-/*
-  Il tema deve essere UNO solo per tutta la pagina: lo switch in alto,
-  il cursore e la foto di apertura devono guardare lo stesso stato.
-  Chiamare useTheme() in più componenti creerebbe stati separati che
-  non si parlano — da qui il context.
-*/
+// context e non hook diretto: useTheme() in più componenti creerebbe
+// stati separati che non si parlano
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {

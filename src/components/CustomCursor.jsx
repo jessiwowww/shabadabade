@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ILLUSTRATIONS, randomIllustrationIndex } from "../data/illustrations";
+import { coloreDisegnoCasuale } from "../data/doodleColors";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import { useThemeContext } from "./ThemeProvider.jsx";
 
-/*
-  Cursore "satellite": il cursore di sistema resta sempre visibile
-  (mai cursor: none), un'illustrazione lo segue con ritardo a molla
-  e un offset fisso in basso a destra per non coprirlo mai.
-  Solo desktop; su touch non viene montato nulla.
-*/
+// il cursore di sistema resta sempre visibile: l'illustrazione lo
+// segue con un offset fisso per non coprirlo mai
 const OFFSET = 26;
 
 export default function CustomCursor() {
   const isDesktop = useIsDesktop();
-  // Illustrazione scelta random al caricamento, fissa fino al refresh
+  const { palette } = useThemeContext();
+  // il disegno è fisso fino al refresh, il colore si ripesca al cambio
+  // tema: quello di prima potrebbe sparire sul nuovo sfondo
   const [illoIndex] = useState(randomIllustrationIndex);
+  const colore = useMemo(() => coloreDisegnoCasuale(palette), [palette]);
   const [visible, setVisible] = useState(false);
 
   const x = useMotionValue(-200);
@@ -46,12 +47,15 @@ export default function CustomCursor() {
     <motion.div
       aria-hidden="true"
       // pointer-events-none + z-index basso: non intercetta mai i click.
-      // text-sb-accent: i disegni usano currentColor, così seguono il tema
-      className="pointer-events-none fixed left-0 top-0 z-[5] text-sb-accent"
-      style={{ x: springX, y: springY, opacity: visible ? 1 : 0 }}
+      // il colore arriva da `color`: i disegni usano currentColor
+      className="pointer-events-none fixed left-0 top-0 z-[5]"
+      style={{
+        x: springX,
+        y: springY,
+        opacity: visible ? 1 : 0,
+        color: colore,
+      }}
     >
-      {/* i disegni hanno margine dentro il loro riquadro: serve una
-          misura generosa perché si leggano */}
       <Illo size={92} />
     </motion.div>
   );

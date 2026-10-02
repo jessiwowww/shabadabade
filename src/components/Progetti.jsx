@@ -3,11 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-/*
-  Pagina "Projects": i lavori completi (case study), ognuno con la sua
-  copertina scelta da Sharon. Ogni progetto ha il suo indirizzo
-  (/projects/<slug>), quindi si può condividere singolarmente.
-*/
 export default function Progetti({ caseStudies }) {
   return (
     <section className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14">

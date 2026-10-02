@@ -1,9 +1,5 @@
-/*
-  Flag condiviso: mentre uno scroll programmatico verso un'ancora è in
-  corso (es. click su "Contact"), la griglia NON deve auto-caricare
-  altri lavori — allungherebbero la pagina e sposterebbero il bersaglio.
-  Si sblocca a fine scroll ("scrollend") o comunque dopo un timeout.
-*/
+// durante uno scroll verso un'ancora la griglia non deve caricare
+// altri lavori: allungherebbero la pagina spostando il bersaglio
 let suppressed = false;
 
 export function suppressAutoload(ms = 2000) {
@@ -21,12 +17,10 @@ export function isAutoloadSuppressed() {
 }
 
 /*
-  Scroll a un'ancora "auto-correttivo": il layout della home può
-  muoversi dopo il primo render (la masonry ricalcola le colonne,
-  immagini e font arrivano dopo), quindi un solo scrollIntoView può
-  mancare il bersaglio. Qui si riprova ogni ~600ms finché la sezione
-  non è davvero in cima al viewport (o finiscono i tentativi).
-  Se l'utente scrolla a mano, la correzione si interrompe subito.
+  Auto-correttivo: il layout della home si assesta dopo il primo
+  render (masonry, immagini, font), quindi un solo scrollIntoView
+  manca il bersaglio. Si riprova finché la sezione non è in cima.
+  Se l'utente scrolla a mano, smette.
 */
 export function scrollToAnchor(anchor, { fromTop = false } = {}) {
   let cancelled = false;

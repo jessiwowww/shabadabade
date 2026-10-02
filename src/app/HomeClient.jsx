@@ -13,11 +13,6 @@ import Contatti from "@/components/Contatti.jsx";
 import { useScopedTags } from "@/hooks/useTags.js";
 import { macroList, macroLabel } from "@/data/macroCategories";
 
-/*
-  Parte interattiva della home: filtro a pin, griglia e lightbox.
-  I contenuti arrivano già pronti dal server (src/app/page.js) — qui
-  non si fa nessuna chiamata di rete.
-*/
 export default function HomeClient({ projects, about }) {
   // LIVELLO 1: etichetta della macro attiva (null = tutte)
   const [macro, setMacro] = useState(null);
@@ -27,13 +22,7 @@ export default function HomeClient({ projects, about }) {
   // lavoro di cui è aperto l'album (livello 3)
   const [albumProject, setAlbumProject] = useState(null);
 
-  /*
-    Ancore (#chi-sono, #contatti): il layout della home si assesta dopo
-    il primo render — la griglia masonry ricalcola le colonne — quindi
-    un solo salto mancherebbe il bersaglio. scrollToAnchor si
-    autocorregge finché la sezione non è davvero in cima.
-    Arrivando da un'altra pagina si riparte dall'alto e si scorre.
-  */
+  // arrivando da un'altra pagina si riparte dall'alto e si scorre
   useEffect(() => {
     const hash = window.location.hash;
     if (hash && !hash.startsWith("#/")) {
@@ -50,10 +39,7 @@ export default function HomeClient({ projects, about }) {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  /*
-    Un'etichetta può corrispondere a più numeri (due categorie
-    accorpate sotto lo stesso nome): il filtro tiene tutti i numeri.
-  */
+  // un'etichetta può valere più numeri: il filtro li tiene tutti
   const numeriMacro = useMemo(() => {
     if (!macro) return null;
     const voce = macroList().find((v) => v.etichetta === macro);
@@ -80,18 +66,22 @@ export default function HomeClient({ projects, about }) {
 
   const tags = useScopedTags(projects, nelContesto);
 
-  /*
-    La macro domina i tag: un tag attivo che dentro questo contesto non
-    ha riscontro viene ignorato invece di svuotare la griglia — resta
-    segnato con la ✕ nella sidebar.
-  */
+  // la macro domina i tag: un tag senza riscontro qui viene ignorato
+  // invece di svuotare la griglia
+  const tagApplicati = useMemo(
+    () =>
+      [...activeTags].filter((t) =>
+        nelContesto.some((p) => p.tags?.includes(t))
+      ),
+    [nelContesto, activeTags]
+  );
+
   const filtered = useMemo(() => {
-    const validi = [...activeTags].filter((t) =>
-      nelContesto.some((p) => p.tags?.includes(t))
+    if (tagApplicati.length === 0) return nelContesto;
+    return nelContesto.filter((p) =>
+      p.tags.some((t) => tagApplicati.includes(t))
     );
-    if (validi.length === 0) return nelContesto;
-    return nelContesto.filter((p) => p.tags.some((t) => validi.includes(t)));
-  }, [nelContesto, activeTags]);
+  }, [nelContesto, tagApplicati]);
 
   const toggleTag = useCallback((tag) => {
     setActiveTags((prev) => {
@@ -170,8 +160,11 @@ export default function HomeClient({ projects, about }) {
         projects={filtered}
         index={lightboxIndex}
         activeTags={activeTags}
+        tagApplicati={tagApplicati}
+        macro={macro}
         onClose={() => setLightboxIndex(null)}
         onNavigate={navigateLightbox}
+        onSetIndex={setLightboxIndex}
         onTagPick={pickTagFromLightbox}
         onOpenAlbum={(p) => {
           // l'album prende il posto del lightbox, non ci si accavalla

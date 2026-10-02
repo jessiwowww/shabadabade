@@ -2,19 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { NERO, BIANCO, TEMPERE } from "../data/themes";
 
 /*
-  Tre modalità: "nero", "bianco", "random".
-  La modalità viene ricordata (localStorage), ma il colore della
-  modalità random NO: a ogni refresh se ne estrae uno nuovo dalla
-  palette tempera. Ricliccare "random" ri-estrae subito.
-
-  Il tema è già applicato prima che la pagina si disegni, da uno
-  script inline nel layout (niente lampo di nero su chi ha scelto il
-  bianco). Quello script lascia la sua scelta in window.__sbTheme:
-  qui la si raccoglie invece di rifarla, così la modalità random non
-  cambia colore due volte al caricamento.
-
-  Lo stato parte dai valori di default perché il primo render del
-  browser deve coincidere con quello del server (idratazione).
+  La modalità è ricordata, il colore del random no: cambia a ogni
+  refresh. Lo stato parte dai default perché il primo render del
+  browser deve coincidere con quello del server (idratazione); la
+  scelta vera l'ha già fatta lo script inline del layout e sta in
+  window.__sbTheme — la si raccoglie invece di rifarla, o il random
+  cambierebbe colore due volte al caricamento.
 */
 export const STORAGE_KEY = "sb-theme-mode";
 const MODES = ["nero", "bianco", "random"];

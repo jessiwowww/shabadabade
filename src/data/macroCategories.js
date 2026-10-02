@@ -1,17 +1,8 @@
 /*
-  LIVELLO 1 — le macro categorie.
-
-  Nel database restano NUMERI ("1".."6"): il significato vive qui, nel
-  sito. Così rinominare una categoria è una riga in questo file e non
-  tocca un solo contenuto già caricato.
-
-  Due numeri possono puntare alla stessa etichetta: il selettore la
-  mostra una volta sola e filtra su entrambi i numeri. È il modo per
-  accorpare due categorie senza rietichettare niente.
-
-  Sopra i tag liberi (livello 2): quando una macro è attiva, i pin che
-  non hanno riscontro dentro quella macro si spengono invece di
-  svuotare la griglia.
+  Nel database restano NUMERI: il significato vive qui, quindi
+  rinominare una categoria non tocca i contenuti già caricati.
+  Due numeri sulla stessa etichetta = due categorie accorpate senza
+  rietichettare niente.
 */
 export const MACRO = {
   1: "Identity",
@@ -22,10 +13,7 @@ export const MACRO = {
   6: "Performance",
 };
 
-/*
-  Elenco per il selettore: una voce per ETICHETTA (non per numero),
-  con i numeri che le corrispondono.
-*/
+// una voce per etichetta, non per numero
 export function macroList() {
   const perEtichetta = new Map();
   for (const [numero, etichetta] of Object.entries(MACRO)) {

@@ -1,18 +1,8 @@
 /*
-  Dati mock dei progetti (fallback finché Sanity è vuoto).
-  Stessa shape dello schema Sanity: { id, immagine, titolo, macro,
-  tags, descrizione, data, ordine, album } — vedi src/lib/content.js.
-
-  `macro` è il livello 1: un numero ("1".."6") il cui significato vive
-  in src/data/macroCategories.js. Nel database restano numeri, così
-  rinominare una categoria non tocca i contenuti.
-
-  `tags` sono stringhe libere IN INGLESE: la lista dei pin viene sempre
-  derivata da qui, mai hardcodata, e si restringe al mondo attivo.
-  Le categorie di Commissioni.jsx puntano a questi stessi tag.
-
-  `larghezza`/`altezza` sono le dimensioni naturali dell'immagine:
-  servono alla griglia per riservare lo spazio prima del lazy load.
+  Dati di esempio: il sito li usa finché Sanity è vuoto.
+  Stessa shape dello schema Sanity (vedi src/lib/content.js).
+  `larghezza`/`altezza` servono a riservare lo spazio in griglia
+  prima che l'immagine arrivi.
 */
 
 const img = (seed, w, h) => ({
@@ -32,13 +22,7 @@ export const PROJECTS = [
       "Invitation suite for a September wedding: hand-drawn flowers, rough paper, no gold foil.",
     data: "2026-03-01",
     ordine: 1,
-    /*
-      ALBUM (livello 3): le foto in più stanno DENTRO la copertina,
-      non come contenuti separati. Sharon le carica tutte in una volta
-      nello stesso documento; in griglia compare il numero, e si
-      sfogliano senza uscire dalla galleria.
-      Ogni voce può essere un'immagine o un video.
-    */
+    // album: foto e video stanno dentro la copertina, non separati
     album: [
       { tipo: "immagine", immagine: img("sb-fiori-a", 1200, 800), didascalia: "The full suite laid out." },
       { tipo: "immagine", immagine: img("sb-fiori-b", 900, 1200), didascalia: "Envelope liner." },

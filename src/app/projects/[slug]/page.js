@@ -6,20 +6,13 @@ import { ogImageUrl } from "@/lib/images.js";
 
 export const revalidate = 60;
 
-/*
-  Le pagine dei progetti esistenti vengono generate in anticipo; quelle
-  pubblicate dopo su Sanity vengono create alla prima visita.
-*/
 export async function generateStaticParams() {
   const caseStudies = await getCaseStudies();
   return caseStudies.map((cs) => ({ slug: cs.slug }));
 }
 
-/*
-  È qui che si gioca la condivisione: ogni progetto ha titolo,
-  descrizione e immagine propri, invece dell'anteprima generica del
-  sito uguale per tutti.
-*/
+// ogni progetto ha titolo, descrizione e immagine propri: senza,
+// condividendo un link l'anteprima sarebbe uguale per tutti
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const caseStudy = await getCaseStudy(slug);

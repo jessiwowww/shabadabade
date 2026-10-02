@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ILLUSTRATIONS, randomIllustrationIndex } from "../data/illustrations";
+import { coloreDisegnoCasuale } from "../data/doodleColors";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import { useThemeContext } from "./ThemeProvider.jsx";
 
-/*
-  Illustrazioni "lanciate" al click: indipendenti dal cursore satellite.
-  Desktop: ogni click sulla pagina ne genera una.
-  Mobile: solo i tap su aree NON interattive (i tap su bottoni, pin,
-  card e link non generano l'effetto).
-*/
+// su telefono solo i tap su aree non interattive: altrimenti ogni
+// bottone premuto lancerebbe un disegno
 const INTERACTIVE_SELECTOR =
   "a, button, input, textarea, select, [role='button'], [data-interactive]";
 
@@ -16,6 +14,7 @@ const SIZE = 88;
 
 export default function ClickBurst() {
   const isDesktop = useIsDesktop();
+  const { palette } = useThemeContext();
   const [bursts, setBursts] = useState([]);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function ClickBurst() {
           x: e.clientX,
           y: e.clientY,
           illoIndex: randomIllustrationIndex(),
-          // traiettoria random: verso l'alto o laterale
+          colore: coloreDisegnoCasuale(palette),
           dx:
             direction === "side"
               ? (Math.random() < 0.5 ? -1 : 1) * (90 + Math.random() * 70)
@@ -43,7 +42,7 @@ export default function ClickBurst() {
     };
     window.addEventListener("click", onClick);
     return () => window.removeEventListener("click", onClick);
-  }, [isDesktop]);
+  }, [isDesktop, palette]);
 
   const remove = (id) => setBursts((prev) => prev.filter((b) => b.id !== id));
 
@@ -55,8 +54,9 @@ export default function ClickBurst() {
           return (
             <motion.div
               key={b.id}
-              // text-sb-accent: i disegni usano currentColor
-              className="absolute left-0 top-0 text-sb-accent"
+              // il colore arriva da `style`: i disegni usano currentColor
+              className="absolute left-0 top-0"
+              style={{ color: b.colore }}
               initial={{
                 opacity: 0,
                 scale: 0.2,

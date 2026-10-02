@@ -2,7 +2,6 @@ import { getCaseStudies } from "@/lib/content.js";
 
 const base = process.env.NEXT_PUBLIC_SITE_URL || "https://sharonbertoncello.com";
 
-/* Sitemap generata dai contenuti: i progetti nuovi entrano da soli. */
 export default async function sitemap() {
   const caseStudies = await getCaseStudies();
 

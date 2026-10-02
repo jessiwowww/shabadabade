@@ -3,13 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-/*
-  Dettaglio di un progetto completo: titolo, intro e contenuti a
-  blocchi (testo / immagine / video) nell'ordine deciso da Sharon —
-  lo stesso argomento sviscerato alternando racconto e tavole.
-  Se lo slug non esiste è la pagina a rispondere 404, non questo
-  componente.
-*/
 function Blocco({ blocco }) {
   if (blocco.tipo === "testo") {
     return (

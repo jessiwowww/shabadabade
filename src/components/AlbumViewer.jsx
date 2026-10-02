@@ -3,15 +3,6 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-/*
-  Album di un lavoro: le foto (e i video) che stanno dentro alla
-  copertina. Si apre dalla griglia — senza passare dal lavoro — e
-  anche dal lightbox.
-
-  Libreria a scorrimento orizzontale con aggancio: sul telefono si
-  sfoglia col dito, sul desktop con la rotellina o le frecce.
-  Si chiude con la X, con Esc o cliccando fuori.
-*/
 export default function AlbumViewer({ project, onClose }) {
   useEffect(() => {
     if (!project) return;

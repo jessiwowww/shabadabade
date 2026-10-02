@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
 
 /*
-  Numero di colonne della griglia masonry.
-
-  Lo calcoliamo qui invece di usare ResponsiveMasonry perché quello
-  parte da window.innerWidth: sul server non esiste, quindi il server
-  disegnava una colonna e il browser tre — e React segnalava un errore
-  di idratazione. Server e primo render del browser devono coincidere,
-  perciò si parte sempre da PARTENZA e si misura dopo il montaggio.
+  Calcolato qui e non con ResponsiveMasonry: quello parte da
+  window.innerWidth, che sul server non esiste — il server disegnava
+  una colonna e il browser tre, e React segnalava un errore di
+  idratazione. Si parte sempre da PARTENZA e si misura dopo.
+  Mai meno di due: a colonna singola ogni foto occupava tutto lo
+  schermo del telefono.
 */
 const BREAKPOINTS = [
   { da: 1600, colonne: 4 },
   { da: 1024, colonne: 3 },
   { da: 560, colonne: 2 },
-  { da: 0, colonne: 1 },
+  { da: 0, colonne: 2 },
 ];
 
-// valore di compromesso: il salto al primo caricamento resta di una
-// colonna sia su telefono che su desktop, e avviene sotto l'hero
+// combacia con la colonna minima: su telefono non c'è nessun salto
+// al primo caricamento, perché il valore di partenza è già quello buono
 const PARTENZA = 2;
 
 export function useColumnCount() {

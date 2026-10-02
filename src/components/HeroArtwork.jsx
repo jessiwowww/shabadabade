@@ -2,14 +2,7 @@
 
 import { Libro, Cane, Nuvola, Fiore, Cuffie, Skate, Sorriso } from "@/data/illustrations";
 
-/*
-  Pannello di apertura provvisorio: si vede finché in public/hero/ non
-  ci sono le foto vere (vedi src/data/heroPhotos.js).
-
-  Non è un segnaposto grigio: usa i disegni veri di Sharon disposti
-  come nel suo collage, con il nome in tondo al centro. Prende i colori
-  dal tema, quindi cambia insieme al resto del sito.
-*/
+// ripiego quando in public/hero/ manca la foto (vedi heroPhotos.js)
 const DISEGNI = [
   { Illo: Libro, left: "9%", top: "8%", w: "17%" },
   { Illo: Cane, left: "66%", top: "5%", w: "20%" },

@@ -3,15 +3,10 @@ import { PROJECTS } from "../data/projects";
 import { CASE_STUDIES } from "../data/caseStudies";
 
 /*
-  Strato contenuti del sito: unico punto in cui si parla con Sanity.
-  Sostituisce i vecchi hook useProjects / useCaseStudies / useChiSono,
-  che facevano fetch dal browser: ora le query girano lato server, così
-  il contenuto è già nell'HTML (indicizzabile e condivisibile) invece
-  di comparire dopo il JavaScript.
-
-  Regola di fallback invariata: se Sanity è vuoto o non risponde, il
-  sito mostra i dati di esempio di src/data/ e lo dice nei log del
-  server. Non deve mai presentarsi rotto.
+  Unico punto in cui il sito parla con Sanity, lato server: il
+  contenuto è già nell'HTML invece di comparire dopo il JavaScript.
+  Se Sanity è vuoto o non risponde si usano i dati di esempio: il
+  sito non deve mai presentarsi rotto.
 */
 
 const PROJECTS_QUERY = `*[_type == "progetto"] | order(ordine asc) {
@@ -51,11 +46,8 @@ const PROJECTS_QUERY = `*[_type == "progetto"] | order(ordine asc) {
   }, [])
 }`;
 
-/*
-  `slug` è quello che finisce nell'indirizzo (/projects/<slug>).
-  coalesce() tiene buono l'_id finché Sharon non compila lo slug, così
-  la pagina esiste comunque — ma con un indirizzo brutto.
-*/
+// coalesce sullo slug: finché Sharon non lo compila la pagina esiste
+// comunque, con un indirizzo brutto
 const CASE_STUDIES_QUERY = `*[_type == "progettoCompleto"] | order(ordine asc) {
   "id": _id,
   "slug": coalesce(slug.current, _id),

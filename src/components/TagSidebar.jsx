@@ -6,21 +6,9 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import MacroSelector from "@/components/MacroSelector.jsx";
 
-/*
-  Sidebar dei tag come "pin/spille" (feature signature) + navigazione.
-  Desktop: colonna fissa a sinistra sempre visibile (nav + pin).
-  Mobile: mini-nav fissa in alto a sinistra; bottone filtro flottante
-  che apre un drawer dal basso (solo in home, dove c'è la griglia).
-  I pin sono generati dinamicamente dai tag dei progetti; dimensione e
-  opacità crescono con la frequenza d'uso (tag cloud sottile).
-
-  La pagina corrente si ricava dall'indirizzo (usePathname): le pagine
-  dei progetti montano la sidebar senza passare nulla.
-*/
-
 const NESSUN_TAG_ATTIVO = new Set();
 
-// rotazione leggera ma deterministica per tag, così non cambia a ogni render
+// deterministica per tag: una rotazione casuale cambierebbe a ogni render
 function pinRotation(name) {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
@@ -28,16 +16,10 @@ function pinRotation(name) {
 }
 
 function Pin({ tag, maxCount, active, onToggle, compact = false }) {
-  /*
-    Tag senza riscontro dentro la macro attiva: resta visibile ma
-    spento e segnato con una ✕, invece di sparire. Così si capisce
-    che quel tag esiste ma non in questo contesto — e cliccarlo non
-    svuota la griglia.
-  */
+  // senza riscontro nella macro attiva: resta visibile e barrato
+  // invece di sparire, altrimenti sembra che il tag non esista
   const nonDisponibile = tag.count === 0;
   const weight = maxCount > 1 ? (tag.count - 1) / (maxCount - 1) : 1;
-  // versione compatta (sidebar desktop): scala tipografica ridotta;
-  // nel drawer mobile restano i touch target da 44px
   const fontSize = compact
     ? `${(0.68 + weight * 0.22).toFixed(2)}rem`
     : `${(0.78 + weight * 0.3).toFixed(2)}rem`;
@@ -56,25 +38,30 @@ function Pin({ tag, maxCount, active, onToggle, compact = false }) {
         compact ? "min-h-7 px-2.5 py-0.5" : "min-h-11 px-3.5 py-1.5"
       } ${
         nonDisponibile
-          ? "cursor-not-allowed border-dashed border-sb-ink/20 bg-transparent text-sb-ink-soft"
+          ? active
+            ? // tiene il colore di "attivo": senza, sembrerebbe che
+              // non l'avevi mai selezionato
+              "cursor-not-allowed border-dashed border-sb-accent bg-sb-accent/10 text-sb-accent line-through decoration-sb-accent/60"
+            : "cursor-not-allowed border-dashed border-sb-ink/20 bg-transparent text-sb-ink-soft"
           : active
             ? "border-sb-accent bg-sb-accent/15 text-sb-accent"
             : "border-sb-ink/25 bg-sb-surface text-sb-ink hover:border-sb-ink/60"
       }`}
       style={{
         fontSize,
-        opacity: nonDisponibile ? 0.45 : opacity,
+        opacity: nonDisponibile ? (active ? 0.85 : 0.45) : opacity,
         rotate: `${pinRotation(tag.name)}deg`,
       }}
     >
-      {/* testa della spilla */}
       <span
         aria-hidden="true"
         className={`absolute -left-1 -top-1 rounded-full border-2 border-sb-bg shadow ${
           compact ? "h-2.5 w-2.5" : "h-3 w-3"
         } ${
           nonDisponibile
-            ? "bg-sb-ink/25"
+            ? active
+              ? "bg-sb-accent/60"
+              : "bg-sb-ink/25"
             : active
               ? "bg-sb-accent"
               : "bg-sb-ink/70"
@@ -88,8 +75,17 @@ function Pin({ tag, maxCount, active, onToggle, compact = false }) {
   );
 }
 
-function PinList({ tags, activeTags, onToggle, onClear, compact = false }) {
+function PinList({
+  tags,
+  activeTags,
+  onToggle,
+  onClear,
+  macro,
+  compact = false,
+}) {
   const maxCount = Math.max(1, ...tags.map((t) => t.count));
+  // detto anche a parole: il solo pin barrato può sfuggire
+  const ignorati = tags.filter((t) => t.count === 0 && activeTags.has(t.name));
   return (
     <>
       <div
@@ -110,6 +106,17 @@ function PinList({ tags, activeTags, onToggle, onClear, compact = false }) {
           />
         ))}
       </div>
+      {ignorati.length > 0 && (
+        <p
+          className={`text-sb-accent ${compact ? "mt-4 text-[0.7rem]" : "mt-5 text-xs"}`}
+        >
+          {ignorati.length === 1
+            ? `“${ignorati[0].name}” isn't`
+            : `${ignorati.length} selected tags aren't`}{" "}
+          in {macro ?? "this category"} — ignored here.
+        </p>
+      )}
+
       {activeTags.size > 0 && (
         <button
           type="button"
@@ -126,13 +133,11 @@ function PinList({ tags, activeTags, onToggle, onClear, compact = false }) {
   );
 }
 
-// La home non ha bisogno di una voce: è "S.B." stesso.
-// "About & contact" scende sotto le immagini: bio, commissioni, contatti.
 function NavLinks({ suProgetti, vertical = false }) {
   const links = [
     { label: "Projects", href: "/projects", active: suProgetti },
-    // scroll={false}: allo scroll ci pensa scrollToAnchor (parte
-    // dall'alto e scende), altrimenti Next salta in cima e lo annulla
+    // scroll={false}: ci pensa scrollToAnchor, o Next salta in cima
+    // e annulla il nostro scorrimento
     { label: "About & contact", href: "/#chi-sono", active: false, scroll: false },
   ];
   return (
@@ -179,12 +184,11 @@ export default function TagSidebar({
 
   return (
     <>
-      {/* Desktop: sidebar fissa con nav + pin, volutamente discreta */}
       <aside className="sb-scroll fixed inset-y-0 left-0 z-20 hidden w-52 flex-col overflow-y-auto border-r border-sb-ink/10 bg-sb-bg px-5 py-8 lg:flex">
         <Link
           href="/"
           data-interactive
-          className="font-display text-base font-bold tracking-tight text-sb-ink"
+          className="font-nome text-base font-bold tracking-tight text-sb-ink"
         >
           shabadabade
         </Link>
@@ -195,17 +199,6 @@ export default function TagSidebar({
 
         {conFiltri && (
           <>
-            {/* LIVELLO 1, sopra i pin: è una scelta di contesto */}
-            <h2 className="mb-3 mt-8 text-[0.65rem] uppercase tracking-[0.2em] text-sb-ink-soft">
-              Category
-            </h2>
-            <MacroSelector
-              attiva={macro}
-              onPick={onPickMacro}
-              conteggi={conteggiMacro}
-              totale={totaleLavori}
-            />
-
             <h2 className="mb-5 mt-8 text-[0.65rem] uppercase tracking-[0.2em] text-sb-ink-soft">
               Filter by tag
             </h2>
@@ -214,18 +207,18 @@ export default function TagSidebar({
               activeTags={activeTags}
               onToggle={onToggle}
               onClear={onClear}
+              macro={macro}
               compact
             />
           </>
         )}
       </aside>
 
-      {/* Mobile: mini-nav fissa in alto a sinistra */}
       <div className="fixed left-4 top-4 z-40 flex items-center gap-0.5 rounded-full border border-sb-ink/15 bg-sb-surface/80 px-1.5 py-1 backdrop-blur lg:hidden">
         <Link
           href="/"
           data-interactive
-          className="inline-flex min-h-10 items-center px-2 font-display text-[0.8rem] font-bold tracking-tight text-sb-ink"
+          className="inline-flex min-h-10 items-center px-2 font-nome text-[0.8rem] font-bold tracking-tight text-sb-ink"
         >
           shabadabade
         </Link>
@@ -245,12 +238,10 @@ export default function TagSidebar({
           data-interactive
           className="inline-flex min-h-10 items-center rounded-full px-2 text-[0.8rem] text-sb-ink-soft"
         >
-          {/* su schermo stretto il nome lungo prende già spazio */}
           About
         </Link>
       </div>
 
-      {/* Mobile: bottone flottante + drawer dal basso (solo con la griglia) */}
       {conFiltri && (
         <>
           <button
@@ -314,6 +305,7 @@ export default function TagSidebar({
                     activeTags={activeTags}
                     onToggle={onToggle}
                     onClear={onClear}
+                    macro={macro}
                   />
                 </motion.div>
               </>

@@ -1,16 +1,14 @@
 import Script from "next/script";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Space_Grotesk, Inter, Caprasimo } from "next/font/google";
 import SiteChrome from "./SiteChrome.jsx";
 import { ThemeProvider } from "@/components/ThemeProvider.jsx";
 import { NERO, BIANCO, TEMPERE } from "@/data/themes.js";
 import "./globals.css";
 
 /*
-  Tema applicato PRIMA che la pagina si disegni: senza questo, chi ha
-  scelto il tema bianco vedrebbe un lampo di nero a ogni caricamento.
-  Le palette sono le stesse di src/data/themes.js (unica fonte), qui
-  serializzate. La scelta resta in window.__sbTheme, che useTheme
-  raccoglie per non ri-estrarre un secondo colore random.
+  Applicato PRIMA che la pagina si disegni: senza, chi ha scelto il
+  bianco vedrebbe un lampo di nero a ogni caricamento. Lascia la
+  scelta in window.__sbTheme perché useTheme non la rifaccia.
 */
 const themeScript = `(function(){try{
 var N=${JSON.stringify(NERO)},B=${JSON.stringify(BIANCO)},T=${JSON.stringify(TEMPERE)};
@@ -24,15 +22,18 @@ r.setProperty("--sb-accent",p.accent);
 window.__sbTheme={mode:m,palette:p};
 }catch(e){}})();`;
 
-/*
-  Font self-hosted da Next: niente richiesta bloccante a Google al
-  caricamento, e nessuno spostamento del testo quando arrivano.
-  Le variabili sono consumate da globals.css (@theme inline).
-*/
+// self-hosted: niente richiesta bloccante a Google al caricamento
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const caprasimo = Caprasimo({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-caprasimo",
   display: "swap",
 });
 
@@ -43,18 +44,13 @@ const inter = Inter({
   display: "swap",
 });
 
-/*
-  metadataBase serve a rendere assoluti gli indirizzi delle immagini di
-  anteprima: senza, le anteprime dei link su LinkedIn/Instagram/WhatsApp
-  non funzionano. Va aggiornato quando il dominio definitivo è attivo
-  (variabile NEXT_PUBLIC_SITE_URL, vedi .env.example).
-*/
+// metadataBase rende assoluti gli indirizzi delle anteprime social:
+// senza, le anteprime dei link non funzionano
 export const metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://sharonbertoncello.com"
   ),
-  /* Il nome d'arte guida, il nome vero resta accanto: chi cerca
-     "Sharon Bertoncello" deve comunque trovarla. */
+  // il nome vero resta accanto: chi la cerca per nome deve trovarla
   title: {
     default: "shabadabade — Sharon Bertoncello, designer & illustrator",
     template: "%s — shabadabade",
@@ -74,12 +70,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    /* lo script del tema scrive sullo <html>: la differenza rispetto
-       all'HTML del server è voluta, non un errore di idratazione */
+    // lo script del tema scrive sullo <html>: la differenza col server
+    // è voluta, non un errore di idratazione
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable}`}
+      className={`${spaceGrotesk.variable} ${caprasimo.variable} ${inter.variable}`}
     >
       <body>
         <Script

@@ -5,27 +5,12 @@ import { isAutoloadSuppressed } from "../lib/anchorScroll";
 import { useColumnCount } from "../hooks/useColumnCount";
 import MacroSelector from "./MacroSelector.jsx";
 
-/*
-  Griglia Masonry vera (stile Tumblr/Pinterest): colonne a larghezza
-  fissa, altezza libera, nessun crop — ogni immagine mantiene le sue
-  proporzioni naturali.
-
-  Animazione filtro in due tempi: gli elementi che non corrispondono
-  più al filtro restano montati per un attimo con fade/scale-out, poi
-  vengono rimossi e i superstiti si riorganizzano con la layout
-  animation di Framer Motion.
-*/
-
+// uscita in due tempi: prima la dissolvenza, poi la rimozione, o i
+// superstiti si riposizionano prima che gli altri siano spariti
 const EXIT_MS = 240;
 
-/*
-  Caricamento a blocchi stile Pinterest: la griglia parte con BATCH
-  lavori e ne aggiunge altri quando lo scroll si avvicina al fondo
-  (sentinella + IntersectionObserver). Così con centinaia di lavori la
-  home resta una vetrina e le sezioni sotto restano raggiungibili.
-  L'auto-load è sospeso durante gli scroll programmatici alle ancore
-  (vedi src/lib/anchorScroll.js).
-*/
+// la home resta una vetrina anche con centinaia di lavori: il resto
+// arriva scorrendo
 const BATCH = 12;
 
 function useFilterTransition(filtered) {
@@ -70,9 +55,8 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
         duration: EXIT_MS / 1000,
       }}
     >
-      {/* il contenitore è un div, non un bottone: dentro ci sta anche
-          il pulsante dell'album, e un bottone dentro un bottone non è
-          HTML valido */}
+      {/* div e non bottone: dentro c'è il pulsante album, e un bottone
+          dentro un bottone non è HTML valido */}
       <div className="group relative overflow-hidden rounded-xl bg-sb-surface">
       <button
         type="button"
@@ -105,8 +89,7 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
             className="block h-auto w-full transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         )}
-        {/* Overlay titolo su hover: il gradiente è sempre nero, quindi
-            il testo resta bianco fisso a prescindere dal tema */}
+        {/* bianco fisso e non token: il gradiente sotto è sempre nero */}
         <span className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-black/75 via-black/10 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span>
             <span className="block font-display text-lg font-semibold text-white">
@@ -119,8 +102,6 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
         </span>
       </button>
 
-      {/* Album: apribile direttamente dalla griglia, senza passare
-          dal lavoro. Il numero dice quante cose ci sono dentro. */}
       {album.length > 0 && (
         <button
           type="button"
@@ -184,25 +165,14 @@ export default function Grid({
 
   return (
     <section id="lavori" className="scroll-mt-12 px-5 py-14 sm:px-8 lg:px-12">
-      {/* il titolo è la macro attiva: "Work" solo quando non filtri */}
-      <h2 className="mb-4 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-        {macro ?? "Work"}
-      </h2>
+      <h2 className="sr-only">Work</h2>
 
-      {/*
-        Livello 1 in chiaro sopra la griglia: sotto i 1024px la sidebar
-        non c'è, e lasciarlo solo dentro il cassetto dei filtri lo
-        rendeva invisibile su telefono. È una scelta di contesto, non
-        un filtro di raffinamento: deve stare in vista.
-      */}
       {onPickMacro && (
-        <div className="mb-6 lg:hidden">
+        <div className="mb-8 max-w-4xl">
           <MacroSelector
             attiva={macro}
             onPick={onPickMacro}
             conteggi={conteggiMacro}
-            totale={totaleLavori}
-            orizzontale
           />
         </div>
       )}

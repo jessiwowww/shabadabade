@@ -27,6 +27,8 @@
   --color-sb-accent: var(--sb-accent);
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-nome: var(--font-caprasimo), var(--font-space-grotesk), ui-sans-serif,
+    system-ui, sans-serif;
 }
 
 html {
@@ -74,6 +76,19 @@ body {
 
 .sb-scroll::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--sb-ink) 45%, transparent);
+}
+
+/*
+  Striscia che scorre di lato senza barra visibile: serve al carosello
+  del lightbox, dove la barra coprirebbe l'immagine.
+*/
+.sb-strip {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.sb-strip::-webkit-scrollbar {
+  display: none;
 }
 
 /* Chi preferisce meno movimento non subisce le animazioni decorative. */

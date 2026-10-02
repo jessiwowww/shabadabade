@@ -1,25 +1,11 @@
 /*
-  I disegni veri di Sharon, usati dal cursore satellite e dall'effetto
-  "lancio" al click. Sono gli stessi che compaiono nella foto di
-  apertura.
-
-  Convertiti dagli SVG originali (viewBox 3000×3000) con una sola
-  modifica: i colori fissi sono diventati `currentColor`, così i
-  disegni prendono il colore del tema attivo invece di restare neri.
-  Il colore lo decide chi li usa (vedi CustomCursor / ClickBurst).
-
-  Per aggiungerne uno nuovo: esporta l'SVG, sostituisci i fill/stroke
-  con "currentColor", incolla qui come componente e aggiungilo a
-  ILLUSTRATIONS. Nient'altro da toccare.
-*/
-
-/*
-  Ogni disegno ha il suo viewBox ritagliato sull'ingombro reale del
-  tratto (misurato con getBBox, più 40 unità di margine per non
-  tagliare gli spessori): negli SVG originali il disegno occupava dal
-  44% al 73% del riquadro, quindi a parità di dimensione alcuni
-  sembravano molto più piccoli di altri. Così riempiono tutti il loro
-  spazio allo stesso modo.
+  Disegni originali di Sharon, con i colori fissi sostituiti da
+  `currentColor`: il colore lo decide chi li usa.
+  Il viewBox di ognuno è ritagliato sull'ingombro reale del tratto
+  (getBBox + 40 di margine): negli originali il disegno occupava dal
+  44% al 73% del riquadro, quindi a parità di misura alcuni
+  sembravano molto più piccoli.
+  Per aggiungerne uno: path, currentColor, e in ILLUSTRATIONS.
 */
 const comune = {
   fill: "currentColor",
@@ -37,8 +23,7 @@ export function Libro({ size = 56 }) {
 export function Cane({ size = 56 }) {
   return (
     <svg width={size} height={size} viewBox="590 680 1820 1639" {...comune}>
-      {/* dettagli interni: prendono il colore dello sfondo, così il
-          muso resta "vuoto" invece di diventare una macchia piena */}
+      {/* colore dello sfondo: il muso resta vuoto, non una macchia */}
       <path
         fill="var(--sb-bg-color)"
         d="M1484.75,1182.43c26.91-28.53,75.47-21.96,109.14-10.26,24.18,8.41,44.78,21.73,65.4,36.34,7.78,5.51,17.96,6.48,26.53,2.38,6.93-3.31,13.7-10.55,13.98-20.5.2-6.94-4.02-15.45-10.11-19.69-18.12-12.64-36.03-24.2-56.03-33.83-62.12-29.91-140.75-33.42-189.65,18.44-32.47,34.43-33.09,81.62-16.67,124.77l16.69,19.29c21.86,22.37,54.46,28.33,83.77,19.45,21.89-6.64,39.41-20.45,49.48-40.62,13.77-27.58,6.8-59.11-16.61-79.11-21.23-18.14-48.83-22.23-75.91-16.66ZM1184.64,1291.57c-23.67,13.69-41.07,34.83-42.51,62.61-1.51,29.06,15.56,53.97,41.77,66.17,35.48,16.51,78.44,7.47,103.87-21.71,21.21-24.33,22.62-55.12,7.5-82.19-10.07-18.03-19.23-35.45-35.57-48.65-48.43-39.12-110.13-31.89-153.97,9.97-31.58,30.16-48.52,71.55-51.52,115.19l-.1,19.59c-.06,11.57,2.79,21.08,12.25,27,8.94,5.6,19.74,5.97,29.35.59,10.44-5.84,14.37-15.47,13.37-27.62-3.2-38.72,9.43-77.67,37.73-103.97,10.57-9.83,22.91-16.53,37.83-16.98Z"
