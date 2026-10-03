@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { scrollToAnchor } from "@/lib/anchorScroll.js";
 import TagSidebar from "@/components/TagSidebar.jsx";
 import Hero from "@/components/Hero.jsx";
@@ -108,11 +108,25 @@ export default function HomeClient({ projects, about }) {
     return i >= 0 ? i : null;
   }, [filtered, lightboxId]);
 
-  // il lavoro aperto è uscito dalla selezione: chiudi invece di
-  // restare appesi a un id che non c'è più
+  const ultimaPosizione = useRef(0);
   useEffect(() => {
-    if (lightboxId && lightboxIndex === null) setLightboxId(null);
-  }, [lightboxId, lightboxIndex]);
+    if (lightboxIndex != null) ultimaPosizione.current = lightboxIndex;
+  }, [lightboxIndex]);
+
+  /*
+    Il lavoro aperto è uscito dalla selezione — succede togliendo il
+    tag per cui ci stava. Invece di buttare fuori, resta nello
+    slideshow sul vicino: si chiude solo se non resta niente.
+  */
+  useEffect(() => {
+    if (!lightboxId || lightboxIndex !== null) return;
+    if (filtered.length === 0) {
+      setLightboxId(null);
+      return;
+    }
+    const i = Math.min(ultimaPosizione.current, filtered.length - 1);
+    setLightboxId(filtered[i].id);
+  }, [lightboxId, lightboxIndex, filtered]);
 
   const openProject = useCallback((project) => setLightboxId(project.id), []);
 
