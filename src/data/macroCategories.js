@@ -29,3 +29,12 @@ export function macroList() {
 export function macroLabel(numero) {
   return MACRO[numero] ?? null;
 }
+
+// indirizzi: /identity, /illustration… per arrivare già filtrati
+export function macroSlug(etichetta) {
+  return etichetta.toLowerCase().replace(/\s+/g, "-");
+}
+
+export function macroDaSlug(slug) {
+  return macroList().find((v) => macroSlug(v.etichetta) === slug) ?? null;
+}

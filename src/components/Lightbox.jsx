@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { bloccaScroll } from "@/lib/scrollLock";
 
 // striscia con aggancio nativo invece di drag a mano: così si vedono
 // entrare le immagini vicine e l'inerzia su telefono è quella di sistema
@@ -17,6 +18,7 @@ export default function Lightbox({
   onTagPick,
   onPickMacro,
   onOpenAlbum,
+  sospeso = false,
 }) {
   const project = index != null ? projects[index] : null;
   const striscia = useRef(null);
@@ -24,23 +26,26 @@ export default function Lightbox({
   const attesaScroll = useRef(null);
   const appenaAperto = useRef(true);
 
+  // blocco scorrimento separato dai tasti: legato solo all'apertura,
+  // o si sgancerebbe a ogni ri-registrazione dei tasti
   useEffect(() => {
     if (!project) {
       appenaAperto.current = true;
       return;
     }
+    return bloccaScroll();
+  }, [project]);
+
+  useEffect(() => {
+    if (!project || sospeso) return; // con l'album sopra i tasti sono suoi
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight") onNavigate(1);
       if (e.key === "ArrowLeft") onNavigate(-1);
     };
     window.addEventListener("keydown", onKey);
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = "";
-    };
-  }, [project, onClose, onNavigate]);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [project, sospeso, onClose, onNavigate]);
 
   // indice cambiato da fuori (apertura, frecce): all'apertura senza
   // animazione, o si vedrebbe scorrere da capo

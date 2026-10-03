@@ -2,6 +2,7 @@ import Script from "next/script";
 import { Space_Grotesk, Inter, Caprasimo } from "next/font/google";
 import SiteChrome from "./SiteChrome.jsx";
 import { ThemeProvider } from "@/components/ThemeProvider.jsx";
+import { SITE_URL } from "@/lib/site.js";
 import { NERO, BIANCO, TEMPERE } from "@/data/themes.js";
 import "./globals.css";
 
@@ -47,9 +48,7 @@ const inter = Inter({
 // metadataBase rende assoluti gli indirizzi delle anteprime social:
 // senza, le anteprime dei link non funzionano
 export const metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://sharonbertoncello.com"
-  ),
+  metadataBase: new URL(SITE_URL),
   // il nome vero resta accanto: chi la cerca per nome deve trovarla
   title: {
     default: "shabadabade — Sharon Bertoncello, designer & illustrator",

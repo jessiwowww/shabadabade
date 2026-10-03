@@ -2,19 +2,21 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { bloccaScroll } from "@/lib/scrollLock";
 
 export default function AlbumViewer({ project, onClose }) {
+  useEffect(() => {
+    if (!project) return;
+    return bloccaScroll();
+  }, [project]);
+
   useEffect(() => {
     if (!project) return;
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = "";
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [project, onClose]);
 
   const voci = project?.album ?? [];
@@ -23,7 +25,8 @@ export default function AlbumViewer({ project, onClose }) {
     <AnimatePresence>
       {project && (
         <motion.div
-          className="fixed inset-0 z-50 flex flex-col bg-sb-bg/95 backdrop-blur-sm"
+          /* sopra il lightbox, che resta aperto sotto */
+          className="fixed inset-0 z-[60] flex flex-col bg-sb-bg/95 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

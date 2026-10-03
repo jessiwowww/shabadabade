@@ -1,4 +1,4 @@
-const base = process.env.NEXT_PUBLIC_SITE_URL || "https://sharonbertoncello.com";
+import { SITE_URL as base } from "@/lib/site.js";
 
 export default function robots() {
   return {

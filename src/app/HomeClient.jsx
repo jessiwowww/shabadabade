@@ -11,11 +11,11 @@ import ChiSono from "@/components/ChiSono.jsx";
 import Commissioni from "@/components/Commissioni.jsx";
 import Contatti from "@/components/Contatti.jsx";
 import { useScopedTags } from "@/hooks/useTags.js";
-import { macroList, macroLabel } from "@/data/macroCategories";
+import { macroList, macroLabel, macroSlug } from "@/data/macroCategories";
 
-export default function HomeClient({ projects, about }) {
+export default function HomeClient({ projects, about, macroIniziale = null }) {
   // LIVELLO 1: etichetta della macro attiva (null = tutte)
-  const [macro, setMacro] = useState(null);
+  const [macro, setMacro] = useState(macroIniziale);
   // Filtro multi-selezione in OR: basta un tag attivo in comune
   const [activeTags, setActiveTags] = useState(() => new Set());
   // il lightbox tiene l'ID, non la posizione: cambiando filtro la
@@ -57,6 +57,19 @@ export default function HomeClient({ projects, about }) {
     [projects, numeriMacro]
   );
 
+  /*
+    L'indirizzo segue la categoria, così è condivisibile: /illustration
+    apre il sito già filtrato. history.replaceState e non il router di
+    Next, altrimenti la pagina si rimonterebbe e chiuderebbe lightbox
+    e album aperti.
+  */
+  useEffect(() => {
+    const url = macro ? `/${macroSlug(macro)}` : "/";
+    if (window.location.pathname !== url) {
+      window.history.replaceState(null, "", url);
+    }
+  }, [macro]);
+
   const conteggiMacro = useMemo(() => {
     const conteggi = new Map();
     for (const p of projects) {
@@ -95,6 +108,8 @@ export default function HomeClient({ projects, about }) {
   }, []);
 
   const clearTags = useCallback(() => setActiveTags(new Set()), []);
+  const chiudiLightbox = useCallback(() => setLightboxId(null), []);
+  const chiudiAlbum = useCallback(() => setAlbumProject(null), []);
 
   // Da "What you can commission": attiva il tag e scorri alla griglia
   const pickCategory = useCallback((tag) => {
@@ -186,22 +201,18 @@ export default function HomeClient({ projects, about }) {
         activeTags={activeTags}
         tagApplicati={tagApplicati}
         macro={macro}
-        onClose={() => setLightboxId(null)}
+        onClose={chiudiLightbox}
         onNavigate={navigateLightbox}
         onSetIndex={(i) => setLightboxId(filtered[i]?.id ?? null)}
         onTagPick={pickTagFromLightbox}
         onPickMacro={setMacro}
-        onOpenAlbum={(p) => {
-          // l'album prende il posto del lightbox, non ci si accavalla
-          setLightboxId(null);
-          setAlbumProject(p);
-        }}
+        // il lightbox resta aperto sotto: chiudendo l'album ci si
+        // ritrova dov'era, non fuori
+        onOpenAlbum={setAlbumProject}
+        sospeso={!!albumProject}
       />
 
-      <AlbumViewer
-        project={albumProject}
-        onClose={() => setAlbumProject(null)}
-      />
+      <AlbumViewer project={albumProject} onClose={chiudiAlbum} />
     </>
   );
 }
