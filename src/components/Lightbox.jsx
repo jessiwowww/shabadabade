@@ -126,6 +126,24 @@ export default function Lightbox({
             <span className="shrink-0 text-[0.7rem] tabular-nums text-sb-ink-soft">
               {index + 1} / {projects.length}
             </span>
+
+            {/* stesso simbolo del badge in griglia: in fondo al
+                pannello passava inosservato */}
+            {(project.album?.length ?? 0) > 0 && (
+              <button
+                type="button"
+                data-interactive
+                onClick={() => onOpenAlbum(project)}
+                aria-label={`Open the album — ${project.album.length} items`}
+                className="flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-sb-surface/80 px-3 text-xs font-semibold text-sb-ink transition-colors hover:text-sb-accent"
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="4.5" y="1.5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M11.5 14.5h-8a2 2 0 0 1-2-2v-8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                {project.album.length}
+              </button>
+            )}
             <button
               type="button"
               data-interactive
