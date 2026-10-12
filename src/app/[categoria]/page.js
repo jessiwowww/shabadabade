@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import HomeClient from "../HomeClient.jsx";
-import { getProjects, getAbout } from "@/lib/content.js";
+import { getProjects, getAbout, getCaseStudies } from "@/lib/content.js";
 import { macroList, macroSlug, macroDaSlug } from "@/data/macroCategories";
 
 export const revalidate = 60;
@@ -31,12 +31,17 @@ export default async function CategoriaPage({ params }) {
   const voce = macroDaSlug(categoria);
   if (!voce) notFound();
 
-  const [projects, about] = await Promise.all([getProjects(), getAbout()]);
+  const [projects, about, caseStudies] = await Promise.all([
+    getProjects(),
+    getAbout(),
+    getCaseStudies(),
+  ]);
 
   return (
     <HomeClient
       projects={projects}
       about={about}
+      caseStudies={caseStudies}
       macroIniziale={voce.etichetta}
     />
   );

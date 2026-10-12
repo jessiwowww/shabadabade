@@ -3,32 +3,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
-
-/*
-  Fa crescere l'immagine dal riquadro della miniatura alla sua
-  posizione nel lightbox. Si misura il disegno vero e non il box:
-  con object-contain il box può essere più largo dell'immagine.
-*/
-function cresciDa(el, origine, larghezza, altezza) {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const box = el.getBoundingClientRect();
-  if (!box.width || !origine?.width) return;
-  const scala = Math.min(box.width / larghezza, box.height / altezza);
-  const w = larghezza * scala;
-  const h = altezza * scala;
-  const ox = (box.width - w) / 2;
-  const oy = (box.height - h) / 2;
-  const s = origine.width / w;
-  const dx = origine.left - box.left - ox * s;
-  const dy = origine.top - box.top - oy * s;
-  el.animate(
-    [
-      { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${s})` },
-      { transformOrigin: "0 0", transform: "none" },
-    ],
-    { duration: 480, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" }
-  );
-}
+import { cresciDa } from "@/lib/transizioni";
 
 // striscia con aggancio nativo invece di drag a mano: così si vedono
 // entrare le immagini vicine e l'inerzia su telefono è quella di sistema

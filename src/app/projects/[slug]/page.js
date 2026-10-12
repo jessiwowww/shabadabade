@@ -43,7 +43,7 @@ export default async function ProjectPage({ params }) {
   const vicino = (passo) => {
     const cs = tutti[(i + passo + tutti.length) % tutti.length];
     return cs && cs.slug !== slug
-      ? { slug: cs.slug, titolo: cs.titolo }
+      ? { slug: cs.slug, titolo: cs.titolo, copertina: cs.copertina }
       : null;
   };
 

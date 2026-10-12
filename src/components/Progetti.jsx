@@ -1,56 +1,96 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ricordaCopertina } from "@/lib/transizioni";
+
+const INCLINA = [3, -2.5, 2, -3.5];
+
+export const pezzi = (cs) => cs.contenuti.filter((b) => b.tipo !== "testo").length;
+export const anno = (cs) => new Date(cs.data).getFullYear();
+
+function Voce({ cs, i }) {
+  const copertina = useRef(null);
+  const inclina = INCLINA[i % INCLINA.length];
+
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.5 }}
+      className="border-b border-sb-ink/15"
+    >
+      <Link
+        href={`/projects/${cs.slug}`}
+        data-interactive
+        onClick={() => ricordaCopertina(cs.slug, copertina.current)}
+        className="group grid gap-6 py-10 md:grid-cols-[4rem_1fr_minmax(0,20rem)] md:items-center md:gap-10 lg:grid-cols-[5rem_1fr_minmax(0,24rem)] lg:py-14"
+      >
+        <span className="font-nome text-3xl text-sb-accent md:self-start md:pt-2">
+          {String(i + 1).padStart(2, "0")}
+        </span>
+
+        <span className="md:order-none order-last block">
+          <span className="block font-display text-4xl font-bold leading-[1.02] tracking-tight transition-colors group-hover:text-sb-accent sm:text-5xl lg:text-6xl">
+            {cs.titolo}
+          </span>
+          <span className="mt-5 block max-w-xl leading-relaxed text-sb-ink-soft">
+            {cs.descrizione}
+          </span>
+          <span className="mt-6 inline-flex items-center gap-3 text-sm">
+            <span className="text-sb-ink-soft">
+              {anno(cs)} · {pezzi(cs)} pieces
+            </span>
+            <span
+              aria-hidden="true"
+              className="font-semibold transition-transform duration-300 group-hover:translate-x-2"
+            >
+              Read →
+            </span>
+          </span>
+        </span>
+
+        <span
+          className="block w-[min(82%,22rem)] justify-self-center bg-sb-surface p-2.5 pb-9 shadow-[0_18px_45px_rgba(0,0,0,0.32)] transition-transform duration-500 ease-out group-hover:rotate-0 group-hover:scale-[1.03] md:w-full"
+          style={{ rotate: `${inclina}deg` }}
+        >
+          <img
+            ref={copertina}
+            src={cs.copertina.url}
+            alt=""
+            width={cs.copertina.larghezza}
+            height={cs.copertina.altezza}
+            loading={i < 2 ? "eager" : "lazy"}
+            decoding="async"
+            className="block h-auto w-full"
+          />
+        </span>
+      </Link>
+    </motion.li>
+  );
+}
 
 export default function Progetti({ caseStudies }) {
   return (
-    <section className="min-h-screen px-5 pb-14 pt-28 sm:px-8 lg:px-12">
-      <h1 className="mb-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+    <section className="min-h-screen px-5 pb-20 pt-28 sm:px-8 lg:px-12 lg:pt-32">
+      <p className="text-xs uppercase tracking-[0.25em] text-sb-ink-soft">
         Projects
+      </p>
+      <h1 className="mt-3 max-w-4xl font-display text-5xl font-bold leading-[1.02] tracking-tight sm:text-7xl">
+        The whole story.
       </h1>
-      <p className="mb-8 max-w-xl text-sb-ink-soft">
+      <p className="mt-5 max-w-xl text-lg text-sb-ink-soft">
         Full projects, told properly: process, final pieces and everything
         in between.
       </p>
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <ol className="mt-14 border-t border-sb-ink/15">
         {caseStudies.map((cs, i) => (
-          <motion.div
-            key={cs.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.07 }}
-          >
-            <Link
-              href={`/projects/${cs.slug}`}
-              data-interactive
-              className="group block overflow-hidden rounded-xl bg-sb-surface"
-            >
-              <span className="block overflow-hidden">
-                <img
-                  src={cs.copertina.url}
-                  alt={cs.titolo}
-                  width={cs.copertina.larghezza}
-                  height={cs.copertina.altezza}
-                  loading="lazy"
-                  decoding="async"
-                  className="aspect-[3/2] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                />
-              </span>
-              <span className="block p-4">
-                <span className="block font-display text-lg font-semibold">
-                  {cs.titolo}
-                </span>
-                <span className="mt-1 block text-xs text-sb-ink-soft">
-                  {new Date(cs.data).getFullYear()} ·{" "}
-                  {cs.contenuti.filter((b) => b.tipo !== "testo").length} pieces
-                </span>
-              </span>
-            </Link>
-          </motion.div>
+          <Voce key={cs.id} cs={cs} i={i} />
         ))}
-      </div>
+      </ol>
     </section>
   );
 }

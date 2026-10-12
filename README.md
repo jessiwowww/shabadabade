@@ -44,7 +44,7 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
 
 | Indirizzo | Pagina |
 | --- | --- |
-| `/` | Home: hero, lavori (griglia / indice / tavolo), about giorno-notte, shop, commissioni, contatti |
+| `/` | Home: hero, lavori (griglia / indice / tavolo), richiamo ai progetti, about giorno-notte, shop, commissioni, contatti |
 | `/projects` | Elenco dei progetti completi |
 | `/projects/<slug>` | Dettaglio di un progetto |
 | `/sitemap.xml`, `/robots.txt` | Generati dai contenuti |
@@ -150,6 +150,12 @@ metti `currentColor` al posto dei colori fissi, e misura il viewBox con
 - **Il nome nella hero** è una lettera per volta
   (`src/data/nomeLettere.js`): per usare i disegni di Sharon basta
   mettere un SVG per lettera in `public/nome/` e indicarlo lì.
+- **Pagina di un progetto**: l'impaginazione la decide il contenuto
+  (`raggruppa` in `ProgettoDettaglio.jsx`). Immagini verticali
+  consecutive affiancate fino a tre, orizzontali e video a tutta
+  larghezza, testi su due colonne. Sharon carica i blocchi in ordine
+  e basta. La copertina cliccata in un elenco cresce fino alla pagina
+  (`src/lib/transizioni.js`).
 - **Shop e commissioni** stanno in `src/data/shop.js`. Ogni prodotto
   ha `href` (pagina sul negozio online) e `prezzo`: finché mancano,
   il pulsante apre una mail già intestata e il prezzo non compare. I

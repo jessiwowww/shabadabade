@@ -6,13 +6,19 @@ import Hero from "@/components/Hero.jsx";
 import Grid from "@/components/Grid.jsx";
 import Lightbox from "@/components/Lightbox.jsx";
 import AlbumViewer from "@/components/AlbumViewer.jsx";
+import ProgettiTeaser from "@/components/ProgettiTeaser.jsx";
 import ChiSono from "@/components/ChiSono.jsx";
 import Supporto from "@/components/Supporto.jsx";
 import Contatti from "@/components/Contatti.jsx";
 import { useScopedTags } from "@/hooks/useTags.js";
 import { macroList, macroLabel, macroSlug } from "@/data/macroCategories";
 
-export default function HomeClient({ projects, about, macroIniziale = null }) {
+export default function HomeClient({
+  projects,
+  about,
+  caseStudies = [],
+  macroIniziale = null,
+}) {
   // LIVELLO 1: etichetta della macro attiva (null = tutte)
   const [macro, setMacro] = useState(macroIniziale);
   // Filtro multi-selezione in OR: basta un tag attivo in comune
@@ -186,6 +192,7 @@ export default function HomeClient({ projects, about, macroIniziale = null }) {
         onToggleTag={toggleTag}
         onClearTags={clearTags}
       />
+      <ProgettiTeaser caseStudies={caseStudies} />
       <ChiSono about={about} />
       <Supporto onPick={pickCategory} />
       <Contatti />
