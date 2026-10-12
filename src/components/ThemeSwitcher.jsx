@@ -88,7 +88,7 @@ export default function ThemeSwitcher({ mode, setMode }) {
         Su telefono in alto non ci sta insieme alla navigazione:
         sotto a sinistra è libero e comodo col pollice.
       */
-      className="fixed bottom-5 left-5 z-40 flex items-center gap-1 rounded-full border border-sb-ink/15 bg-sb-surface/80 p-1 backdrop-blur lg:bottom-auto lg:left-auto lg:right-4 lg:top-4"
+      className="fixed bottom-5 left-5 z-40 flex items-center gap-1 rounded-full border border-sb-ink/15 bg-sb-surface/80 p-1 backdrop-blur lg:bottom-auto lg:left-auto lg:right-4 lg:top-2.5"
       role="group"
       aria-label="Site colour"
     >
@@ -121,8 +121,12 @@ export default function ThemeSwitcher({ mode, setMode }) {
                 transition={{ duration: 0.18 }}
                 type="button"
                 data-interactive
-                onClick={() => {
-                  setMode(opt.mode);
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  setMode(opt.mode, {
+                    x: r.left + r.width / 2,
+                    y: r.top + r.height / 2,
+                  });
                   setAperto(false);
                 }}
                 whileTap={{ scale: 0.88 }}

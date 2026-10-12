@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { NERO, BIANCO, TEMPERE } from "../data/themes";
 
 /*
@@ -42,16 +43,56 @@ export function useTheme() {
     }
   }, []);
 
-  const setMode = useCallback((next) => {
-    setModeState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // storage non disponibile: il tema vale solo per la sessione
+  /*
+    origine = punto da cui il nuovo colore si allarga sulla pagina.
+    tempera = un colore preciso (i barattoli della hero) invece di
+    quello pescato a caso.
+  */
+  const setMode = useCallback((next, origine = null, tempera = null) => {
+    const cambia = () => {
+      setModeState(next);
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        // storage non disponibile: il tema vale solo per la sessione
+      }
+      const nuova = tempera ?? resolvePalette(next);
+      setPalette(nuova);
+      applyPalette(nuova);
+    };
+
+    const riduci = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!origine || riduci || !document.startViewTransition) {
+      cambia();
+      return;
     }
-    const nuova = resolvePalette(next);
-    setPalette(nuova);
-    applyPalette(nuova);
+
+    const root = document.documentElement;
+    const { x, y } = origine;
+    const raggio = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+    // senza, la fotografia del "dopo" coglierebbe la transizione CSS
+    // dei colori ancora ferma al colore vecchio
+    root.classList.add("sb-allagamento");
+    const transizione = document.startViewTransition(() => flushSync(cambia));
+    transizione.ready.then(() => {
+      root.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${raggio}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 750,
+          easing: "cubic-bezier(0.6, 0, 0.2, 1)",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    });
+    transizione.finished.finally(() => root.classList.remove("sb-allagamento"));
   }, []);
 
   return { mode, setMode, palette };

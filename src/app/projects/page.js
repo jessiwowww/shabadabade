@@ -1,5 +1,4 @@
 import Progetti from "@/components/Progetti.jsx";
-import TagSidebar from "@/components/TagSidebar.jsx";
 import { getCaseStudies } from "@/lib/content.js";
 
 export const revalidate = 60;
@@ -19,10 +18,5 @@ export const metadata = {
 export default async function ProjectsPage() {
   const caseStudies = await getCaseStudies();
 
-  return (
-    <>
-      <TagSidebar />
-      <Progetti caseStudies={caseStudies} />
-    </>
-  );
+  return <Progetti caseStudies={caseStudies} />;
 }

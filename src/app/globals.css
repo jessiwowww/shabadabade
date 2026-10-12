@@ -91,6 +91,18 @@ body {
   display: none;
 }
 
+/* cambio tema: il colore nuovo si allarga dal punto del click (useTheme.js) */
+.sb-allagamento,
+.sb-allagamento * {
+  transition: none !important;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* Chi preferisce meno movimento non subisce le animazioni decorative. */
 @media (prefers-reduced-motion: reduce) {
   html {

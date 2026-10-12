@@ -55,7 +55,7 @@ export const metadata = {
     template: "%s — shabadabade",
   },
   description:
-    "shabadabade is Sharon Bertoncello, designer and illustrator based in London. Logos, illustrations, t-shirts, invitations and tattoos — available for commissions.",
+    "shabadabade is Sharon Bertoncello, designer and illustrator based in London. Logos, illustrations, local graphics and invitations on commission — plus stickers, posters and postcards to take home.",
   openGraph: {
     type: "website",
     locale: "en_GB",
@@ -84,7 +84,7 @@ export default function RootLayout({ children }) {
         />
         <ThemeProvider>
           <SiteChrome />
-          <main className="lg:pl-52">{children}</main>
+          <main>{children}</main>
         </ThemeProvider>
       </body>
     </html>

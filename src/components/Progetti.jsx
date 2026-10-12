@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function Progetti({ caseStudies }) {
   return (
-    <section className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14">
+    <section className="min-h-screen px-5 pb-14 pt-28 sm:px-8 lg:px-12">
       <h1 className="mb-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
         Projects
       </h1>

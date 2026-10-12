@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { scrollToAnchor } from "@/lib/anchorScroll.js";
-import TagSidebar from "@/components/TagSidebar.jsx";
 import Hero from "@/components/Hero.jsx";
 import Grid from "@/components/Grid.jsx";
 import Lightbox from "@/components/Lightbox.jsx";
 import AlbumViewer from "@/components/AlbumViewer.jsx";
 import ChiSono from "@/components/ChiSono.jsx";
-import Commissioni from "@/components/Commissioni.jsx";
+import Supporto from "@/components/Supporto.jsx";
 import Contatti from "@/components/Contatti.jsx";
 import { useScopedTags } from "@/hooks/useTags.js";
 import { macroList, macroLabel, macroSlug } from "@/data/macroCategories";
@@ -21,6 +20,8 @@ export default function HomeClient({ projects, about, macroIniziale = null }) {
   // il lightbox tiene l'ID, non la posizione: cambiando filtro la
   // posizione cambierebbe sotto i piedi e salteresti a un altro lavoro
   const [lightboxId, setLightboxId] = useState(null);
+  // riquadro della miniatura cliccata: il lightbox si apre crescendo da lì
+  const [origine, setOrigine] = useState(null);
   // lavoro di cui è aperto l'album (livello 3)
   const [albumProject, setAlbumProject] = useState(null);
 
@@ -111,7 +112,7 @@ export default function HomeClient({ projects, about, macroIniziale = null }) {
   const chiudiLightbox = useCallback(() => setLightboxId(null), []);
   const chiudiAlbum = useCallback(() => setAlbumProject(null), []);
 
-  // Da "What you can commission": attiva il tag e scorri alla griglia
+  // Dalle commissioni: attiva il tag e scorri alla griglia
   const pickCategory = useCallback((tag) => {
     setActiveTags((prev) => (prev.has(tag) ? prev : new Set(prev).add(tag)));
     document.getElementById("lavori")?.scrollIntoView({ behavior: "smooth" });
@@ -143,7 +144,10 @@ export default function HomeClient({ projects, about, macroIniziale = null }) {
     setLightboxId(filtered[i].id);
   }, [lightboxId, lightboxIndex, filtered]);
 
-  const openProject = useCallback((project) => setLightboxId(project.id), []);
+  const openProject = useCallback((project, rect = null) => {
+    setOrigine(rect);
+    setLightboxId(project.id);
+  }, []);
 
   // Da un tag nel lightbox: attiva/disattiva il filtro, chiudi e
   // torna alla griglia (la lista su cui il lightbox naviga cambia)
@@ -169,35 +173,27 @@ export default function HomeClient({ projects, about, macroIniziale = null }) {
 
   return (
     <>
-      <TagSidebar
-        tags={tags}
-        activeTags={activeTags}
-        onToggle={toggleTag}
-        onClear={clearTags}
-        macro={macro}
-        onPickMacro={setMacro}
-        conteggiMacro={conteggiMacro}
-        totaleLavori={projects.length}
-      />
-
       <Hero />
       <Grid
         projects={filtered}
-        loading={false}
         onOpen={openProject}
         onOpenAlbum={setAlbumProject}
         macro={macro}
         onPickMacro={setMacro}
         conteggiMacro={conteggiMacro}
-        totaleLavori={projects.length}
+        tags={tags}
+        activeTags={activeTags}
+        onToggleTag={toggleTag}
+        onClearTags={clearTags}
       />
       <ChiSono about={about} />
-      <Commissioni onPick={pickCategory} />
+      <Supporto onPick={pickCategory} />
       <Contatti />
 
       <Lightbox
         projects={filtered}
         index={lightboxIndex}
+        origine={origine}
         activeTags={activeTags}
         tagApplicati={tagApplicati}
         macro={macro}

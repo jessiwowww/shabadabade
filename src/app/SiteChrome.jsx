@@ -1,5 +1,6 @@
 "use client";
 
+import SiteNav from "@/components/SiteNav.jsx";
 import CustomCursor from "@/components/CustomCursor.jsx";
 import ClickBurst from "@/components/ClickBurst.jsx";
 import ThemeSwitcher from "@/components/ThemeSwitcher.jsx";
@@ -10,6 +11,7 @@ export default function SiteChrome() {
 
   return (
     <>
+      <SiteNav />
       <CustomCursor />
       <ClickBurst />
       <ThemeSwitcher mode={mode} setMode={setMode} />

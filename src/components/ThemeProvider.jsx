@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import { MotionConfig } from "framer-motion";
 import { useTheme } from "@/hooks/useTheme.js";
 
 // context e non hook diretto: useTheme() in più componenti creerebbe
@@ -10,7 +11,10 @@ const ThemeContext = createContext(null);
 export function ThemeProvider({ children }) {
   const theme = useTheme();
   return (
-    <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={theme}>
+      {/* chi chiede meno movimento al sistema non vede gli spostamenti */}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </ThemeContext.Provider>
   );
 }
 

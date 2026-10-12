@@ -94,7 +94,7 @@ export default function ProgettoDettaglio({
           router.push(`/projects/${precedente.slug}`);
         }
       }}
-      className="min-h-screen px-5 pb-14 pt-24 sm:px-8 lg:px-12 lg:pt-14"
+      className="min-h-screen px-5 pb-14 pt-28 sm:px-8 lg:px-12"
     >
       <Link
         href="/projects"

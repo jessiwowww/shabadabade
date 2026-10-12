@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import ProgettoDettaglio from "@/components/ProgettoDettaglio.jsx";
-import TagSidebar from "@/components/TagSidebar.jsx";
 import { getCaseStudies, getCaseStudy } from "@/lib/content.js";
 import { ogImageUrl } from "@/lib/images.js";
 
@@ -49,13 +48,10 @@ export default async function ProjectPage({ params }) {
   };
 
   return (
-    <>
-      <TagSidebar />
-      <ProgettoDettaglio
-        caseStudy={tutti[i]}
-        precedente={vicino(-1)}
-        successivo={vicino(1)}
-      />
-    </>
+    <ProgettoDettaglio
+      caseStudy={tutti[i]}
+      precedente={vicino(-1)}
+      successivo={vicino(1)}
+    />
   );
 }

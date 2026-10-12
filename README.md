@@ -44,7 +44,7 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
 
 | Indirizzo | Pagina |
 | --- | --- |
-| `/` | Home: hero, griglia filtrabile, about, commissioni, contatti |
+| `/` | Home: hero, lavori (griglia / indice / tavolo), about giorno-notte, shop, commissioni, contatti |
 | `/projects` | Elenco dei progetti completi |
 | `/projects/<slug>` | Dettaglio di un progetto |
 | `/sitemap.xml`, `/robots.txt` | Generati dai contenuti |
@@ -72,9 +72,9 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
    stessa etichetta: il selettore la mostra una volta e filtra su
    entrambi. La macro attiva diventa il titolo della griglia.
 2. **Tag liberi** (`tags`) — in inglese, emergono dai contenuti. I pin
-   della sidebar nascono da lì (`src/hooks/useTags.js`), mai
-   hardcodati; le categorie di `Commissioni.jsx` puntano a quegli
-   stessi tag. Quando una macro è attiva i pin senza riscontro restano
+   del pannello "Filter by tag" nascono da lì (`src/hooks/useTags.js`),
+   mai hardcodati; le commissioni di `src/data/shop.js` puntano a
+   quegli stessi tag. Quando una macro è attiva i pin senza riscontro restano
    visibili ma **spenti con una ✕**: la macro domina, e cliccarli non
    svuota la griglia.
 3. **Album** (`album`) — le foto e i video "figli" stanno **dentro** al
@@ -142,7 +142,19 @@ metti `currentColor` al posto dei colori fissi, e misura il viewBox con
   lampeggiare il nero a chi ha scelto il bianco. Le palette stanno in
   `src/data/themes.js` — unica fonte, serializzata nello script.
 - Mobile e desktop sono esperienze diverse: niente cursore satellite su
-  touch, sidebar → drawer, lightbox con swipe.
+  touch, menu a schermo intero, lightbox con swipe, niente vista
+  "Desk" né lettere trascinabili.
+- Cambio tema: il colore nuovo si allarga dal punto del click (View
+  Transitions API, `src/hooks/useTheme.js`). Dove il browser non la
+  supporta, o con "riduci movimento", il cambio è immediato.
+- **Il nome nella hero** è una lettera per volta
+  (`src/data/nomeLettere.js`): per usare i disegni di Sharon basta
+  mettere un SVG per lettera in `public/nome/` e indicarlo lì.
+- **Shop e commissioni** stanno in `src/data/shop.js`. Ogni prodotto
+  ha `href` (pagina sul negozio online) e `prezzo`: finché mancano,
+  il pulsante apre una mail già intestata e il prezzo non compare. I
+  disegni degli oggetti (`src/data/oggetti.jsx`) sono **segnaposto**
+  da sostituire con quelli di Sharon.
 - **Idratazione**: il primo render del browser deve coincidere con
   quello del server. Per questo `useIsDesktop` parte da `false` e
   `useColumnCount` da un valore fisso: i valori veri arrivano subito

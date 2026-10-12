@@ -1,14 +1,41 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
+
+/*
+  Fa crescere l'immagine dal riquadro della miniatura alla sua
+  posizione nel lightbox. Si misura il disegno vero e non il box:
+  con object-contain il box può essere più largo dell'immagine.
+*/
+function cresciDa(el, origine, larghezza, altezza) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box = el.getBoundingClientRect();
+  if (!box.width || !origine?.width) return;
+  const scala = Math.min(box.width / larghezza, box.height / altezza);
+  const w = larghezza * scala;
+  const h = altezza * scala;
+  const ox = (box.width - w) / 2;
+  const oy = (box.height - h) / 2;
+  const s = origine.width / w;
+  const dx = origine.left - box.left - ox * s;
+  const dy = origine.top - box.top - oy * s;
+  el.animate(
+    [
+      { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${s})` },
+      { transformOrigin: "0 0", transform: "none" },
+    ],
+    { duration: 480, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" }
+  );
+}
 
 // striscia con aggancio nativo invece di drag a mano: così si vedono
 // entrare le immagini vicine e l'inerzia su telefono è quella di sistema
 export default function Lightbox({
   projects,
   index,
+  origine = null,
   activeTags,
   tagApplicati,
   macro,
@@ -48,19 +75,27 @@ export default function Lightbox({
   }, [project, sospeso, onClose, onNavigate]);
 
   // indice cambiato da fuori (apertura, frecce): all'apertura senza
-  // animazione, o si vedrebbe scorrere da capo
-  useEffect(() => {
+  // animazione, o si vedrebbe scorrere da capo. Layout effect: la
+  // crescita parte prima che il browser disegni l'immagine al suo posto
+  useLayoutEffect(() => {
     const el = striscia.current;
     if (!el || index == null) return;
     const bersaglio = index * el.offsetWidth;
+    if (appenaAperto.current) {
+      el.scrollTo({ left: bersaglio, behavior: "instant" });
+      appenaAperto.current = false;
+      const media = el.children[index]?.querySelector("img, video");
+      const p = projects[index];
+      const formato = p.video ?? p.immagine;
+      if (media && origine) {
+        cresciDa(media, origine, formato.larghezza, formato.altezza);
+      }
+      return;
+    }
     if (Math.abs(el.scrollLeft - bersaglio) < 4) return;
 
     ignoraScroll.current = true;
-    el.scrollTo({
-      left: bersaglio,
-      behavior: appenaAperto.current ? "instant" : "smooth",
-    });
-    appenaAperto.current = false;
+    el.scrollTo({ left: bersaglio, behavior: "smooth" });
     const t = setTimeout(() => (ignoraScroll.current = false), 450);
     return () => clearTimeout(t);
   }, [index, project]);
@@ -93,8 +128,9 @@ export default function Lightbox({
     <AnimatePresence>
       {project && (
         <motion.div
-          className="fixed inset-0 z-50 flex flex-col bg-sb-bg/95 backdrop-blur-sm lg:items-center lg:justify-center"
-          initial={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex flex-col lg:items-center lg:justify-center"
+          // con l'origine è l'immagine a entrare: lo sfondo arriva da sé
+          initial={{ opacity: origine ? 1 : 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
@@ -103,6 +139,13 @@ export default function Lightbox({
           aria-label={project.titolo}
           data-interactive
         >
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0 bg-sb-bg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          />
           <div
             className="absolute inset-x-0 top-0 z-20 flex items-center gap-2 px-4 py-3"
             onClick={(e) => e.stopPropagation()}
@@ -187,8 +230,8 @@ export default function Lightbox({
           </button>
 
           <motion.div
-            className="flex h-full w-full flex-col overflow-y-auto pt-16 lg:h-auto lg:max-h-[86vh] lg:w-auto lg:max-w-5xl lg:flex-row lg:items-center lg:gap-8 lg:overflow-visible lg:px-8 lg:pt-0"
-            initial={{ opacity: 0, scale: 0.96 }}
+            className="relative flex h-full w-full flex-col overflow-y-auto pt-16 lg:h-auto lg:max-h-[86vh] lg:w-auto lg:max-w-5xl lg:flex-row lg:items-center lg:gap-8 lg:overflow-visible lg:px-8 lg:pt-0"
+            initial={origine ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             onClick={(e) => e.stopPropagation()}
@@ -232,7 +275,11 @@ export default function Lightbox({
               ))}
             </div>
 
-            <div className="px-6 py-6 lg:flex lg:w-72 lg:shrink-0 lg:flex-col lg:justify-center lg:px-0">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: origine ? 0.25 : 0, duration: 0.35 }}
+              className="px-6 py-6 lg:flex lg:w-72 lg:shrink-0 lg:flex-col lg:justify-center lg:px-0">
               <h3 className="font-display text-2xl font-bold tracking-tight">
                 {project.titolo}
               </h3>
@@ -285,7 +332,7 @@ export default function Lightbox({
                   month: "long",
                 })}
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       )}

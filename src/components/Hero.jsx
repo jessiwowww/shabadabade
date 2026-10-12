@@ -1,103 +1,247 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useThemeContext } from "@/components/ThemeProvider.jsx";
 import HeroArtwork from "@/components/HeroArtwork.jsx";
 import { heroPhotoFor } from "@/data/heroPhotos";
+import { NOME } from "@/data/nomeLettere";
+import { NERO, BIANCO, TEMPERE } from "@/data/themes";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 
-// pt-28 su schermo stretto: sopra c'è la navigazione fissa, senza
-// quello spazio il testo ci finisce sotto
+const BARATTOLI = [
+  { palette: NERO, mode: "nero" },
+  { palette: BIANCO, mode: "bianco" },
+  ...TEMPERE.map((t) => ({ palette: t, mode: "random" })),
+];
+
+// inclinazione fissa per lettera: a caso cambierebbe a ogni render
+const INCLINA = [-6, 4, -3, 7, -5, 3, -7, 5, -4, 6, -3];
+
+function Lettera({ lettera, i, trascinabile, vincoli, onSposta }) {
+  const contenuto = lettera.svg ? (
+    lettera.multicolore ? (
+      <img src={lettera.svg} alt="" draggable="false" className="h-[0.8em] w-auto" />
+    ) : (
+      // maschera: il disegno prende il colore del tema come i caratteri
+      <span
+        className="block h-[0.8em] w-[0.6em] bg-current"
+        style={{
+          mask: `url(${lettera.svg}) center / contain no-repeat`,
+          WebkitMask: `url(${lettera.svg}) center / contain no-repeat`,
+        }}
+      />
+    )
+  ) : (
+    lettera.char
+  );
+
+  return (
+    <motion.span
+      aria-hidden="true"
+      className={`inline-block select-none ${lettera.accento ? "text-sb-accent" : ""} ${
+        trascinabile ? "cursor-grab active:cursor-grabbing" : ""
+      }`}
+      initial={{ opacity: 0, y: "40%", rotate: INCLINA[i % INCLINA.length] }}
+      animate={{ opacity: 1, y: 0, rotate: 0 }}
+      transition={{ delay: 0.1 + i * 0.045, type: "spring", stiffness: 260, damping: 18 }}
+      whileHover={{ y: "-8%", rotate: INCLINA[i % INCLINA.length] }}
+      drag={trascinabile}
+      dragConstraints={vincoli}
+      dragMomentum
+      dragTransition={{ power: 0.25, timeConstant: 180 }}
+      whileDrag={{ scale: 1.12, rotate: INCLINA[i % INCLINA.length] * 2, zIndex: 10 }}
+      onDragEnd={onSposta}
+    >
+      {contenuto}
+    </motion.span>
+  );
+}
+
 export default function Hero() {
-  const { palette } = useThemeContext();
+  const { palette, setMode } = useThemeContext();
+  const isDesktop = useIsDesktop();
   const [fotoMancante, setFotoMancante] = useState(false);
+  // cambiando chiave le lettere ripartono dal loro posto
+  const [giro, setGiro] = useState(0);
+  const [spostate, setSpostate] = useState(false);
+  const sezione = useRef(null);
   const foto = heroPhotoFor(palette.nome);
+
+  const dipingi = (b, e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setMode(b.mode, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, b.palette);
+  };
 
   return (
     <section
       id="top"
-      className="flex min-h-[82vh] flex-col justify-center px-5 pb-16 pt-28 sm:px-8 md:py-16 lg:px-12"
+      ref={sezione}
+      className="relative flex min-h-[92svh] flex-col justify-center overflow-hidden px-5 pb-14 pt-24 sm:px-8 lg:px-12"
     >
-      {/* impilate, la foto prende tutta la colonna: il bordo sinistro
-          resta allineato al nome */}
-      <div className="flex flex-col gap-10 md:flex-row md:items-center md:gap-12 lg:gap-14">
-      <div className="md:flex-1">
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-xs uppercase tracking-[0.25em] text-sb-ink-soft"
-        >
-          Sharon Bertoncello — London
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          /* niente font-bold né spaziatura negativa: Caprasimo ha un
-             solo peso e una spaziatura sua, forzarli impasta le lettere */
-          className="mt-3 font-nome text-5xl leading-[1.05] sm:text-6xl lg:text-7xl"
-        >
-          <span className="text-sb-accent">sha</span>badabade
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-5 max-w-sm text-base text-sb-ink-soft"
-        >
-          Designer &amp; illustrator. I draw things that stick.
-        </motion.p>
-
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.15 }}
-        className="w-full md:max-w-[30rem] md:flex-1"
+      <motion.p
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-xs uppercase tracking-[0.25em] text-sb-ink-soft"
       >
-        {fotoMancante ? (
-          <HeroArtwork />
-        ) : (
-          // next/image: gli originali pesano 1,4 MB l'uno. priority
-          // perché è l'immagine più grande della prima schermata
-          <Image
-            src={foto}
-            alt="Sharon Bertoncello a Londra, circondata dai suoi disegni"
-            width={1200}
-            height={1200}
-            priority
-            sizes="(min-width: 1024px) 30rem, 100vw"
-            onError={() => setFotoMancante(true)}
-            className="h-auto w-full rounded-2xl"
+        Sharon Bertoncello — London
+      </motion.p>
+
+      {/* niente font-bold né spaziatura negativa: Caprasimo ha un solo
+          peso e una spaziatura sua, forzarli impasta le lettere */}
+      <h1
+        aria-label="shabadabade"
+        className="relative z-10 mt-2 whitespace-nowrap font-nome text-[clamp(3.2rem,13.6vw,14rem)] leading-[1.05]"
+      >
+        {NOME.map((lettera, i) => (
+          <Lettera
+            key={`${giro}-${i}`}
+            lettera={lettera}
+            i={i}
+            trascinabile={isDesktop}
+            vincoli={sezione}
+            onSposta={() => setSpostate(true)}
           />
-        )}
-      </motion.div>
-      </div>
+        ))}
+      </h1>
 
-      {/* sotto entrambe le colonne: accanto alla foto la freccia
-          sembrava indicare lei */}
-      <motion.a
-        href="#lavori"
-        data-interactive
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        className="mt-12 inline-flex min-h-11 w-fit items-center gap-2 text-sm text-sb-ink-soft underline-offset-4 hover:text-sb-accent hover:underline"
-      >
-        See the work
-        <motion.span
-          aria-hidden="true"
-          animate={{ y: [0, 5, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+      <div className="mt-6 grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
+        <div className="relative z-10 max-w-md">
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+            className="text-lg text-sb-ink sm:text-xl"
+          >
+            Designer &amp; illustrator. I draw things that stick.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-8"
+          >
+            <p id="sb-barattoli" className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
+              Paint the page
+            </p>
+            <div role="group" aria-labelledby="sb-barattoli" className="mt-3 flex flex-wrap gap-1">
+              {BARATTOLI.map((b) => {
+                const attivo = palette.nome === b.palette.nome;
+                return (
+                  <motion.button
+                    key={b.palette.nome}
+                    type="button"
+                    data-interactive
+                    onClick={(e) => dipingi(b, e)}
+                    whileHover={{ y: -4, rotate: -6 }}
+                    whileTap={{ scale: 0.85 }}
+                    aria-label={`Paint the page ${b.palette.nome}`}
+                    aria-pressed={attivo}
+                    className="flex h-11 w-9 items-end justify-center"
+                  >
+                    {/* barattolo: coperchio e vetro col colore dentro */}
+                    <span aria-hidden="true" className="flex flex-col items-center">
+                      <span className="h-1.5 w-5 rounded-[2px] bg-sb-ink/70" />
+                      <span
+                        className={`h-7 w-6 rounded-b-md border-2 ${
+                          attivo ? "border-sb-accent" : "border-sb-ink/40"
+                        }`}
+                        style={{ background: b.palette.bg }}
+                      />
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <a
+              href="#lavori"
+              data-interactive
+              className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-sb-ink underline-offset-4 hover:text-sb-accent hover:underline"
+            >
+              See the work
+              <motion.span
+                aria-hidden="true"
+                animate={{ y: [0, 5, 0] }}
+                transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+              >
+                ↓
+              </motion.span>
+            </a>
+            {spostate && (
+              <button
+                type="button"
+                data-interactive
+                onClick={() => {
+                  setGiro((g) => g + 1);
+                  setSpostate(false);
+                }}
+                className="inline-flex min-h-11 items-center text-sm text-sb-ink-soft underline underline-offset-4 hover:text-sb-accent"
+              >
+                Put the letters back
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* polaroid appoggiata storta, col timbro dei soprannomi */}
+        <motion.div
+          initial={{ opacity: 0, rotate: -12, y: 40 }}
+          animate={{ opacity: 1, rotate: 3, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.35, type: "spring", stiffness: 90, damping: 14 }}
+          whileHover={{ rotate: 0, scale: 1.02 }}
+          className="relative mx-auto w-[min(78vw,22rem)] bg-sb-surface p-3 pb-12 shadow-[0_20px_50px_rgba(0,0,0,0.35)] md:mx-0 md:-mt-24 lg:w-[24rem]"
         >
-          ↓
-        </motion.span>
-      </motion.a>
+          {fotoMancante ? (
+            <HeroArtwork />
+          ) : (
+            // next/image: gli originali pesano 1,4 MB l'uno. priority
+            // perché è l'immagine più grande della prima schermata
+            <Image
+              src={foto}
+              alt="Sharon Bertoncello a Londra, circondata dai suoi disegni"
+              width={1200}
+              height={1200}
+              priority
+              sizes="(min-width: 1024px) 24rem, 78vw"
+              onError={() => setFotoMancante(true)}
+              className="block h-auto w-full"
+            />
+          )}
+          <span className="absolute bottom-3 left-4 text-xs text-sb-ink-soft">
+            London, these days
+          </span>
+          <Timbro />
+        </motion.div>
+      </div>
     </section>
+  );
+}
+
+function Timbro() {
+  return (
+    <motion.svg
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      className="absolute -right-8 -top-10 h-28 w-28 fill-sb-accent"
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: 24, ease: "linear" }}
+    >
+      <defs>
+        <path
+          id="sb-timbro"
+          fill="none"
+          d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"
+        />
+      </defs>
+      <text fontSize="8.4" fontWeight="700">
+        <textPath href="#sb-timbro" textLength="250" lengthAdjust="spacing">SHABADABADE · SHAZZA · SHAZMANIA · SHASHA ·</textPath>
+      </text>
+    </motion.svg>
   );
 }
