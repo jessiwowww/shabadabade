@@ -9,12 +9,12 @@ import { scrollToAnchor } from "@/lib/anchorScroll";
 
 // scroll={false}: ci pensa scrollToAnchor, o Next salta in cima e
 // annulla lo scorrimento verso la sezione
-const VOCI = [
+// Projects solo se ce n'è almeno uno: una voce che porta a una
+// pagina vuota non deve esistere
+const vociMenu = (haProgetti) => [
   { label: "Work", href: "/#lavori", scroll: false },
-  { label: "Projects", href: "/projects" },
-  { label: "Shop", href: "/#shop", scroll: false },
-  { label: "About", href: "/#chi-sono", scroll: false },
-  { label: "Contact", href: "/#contatti", scroll: false },
+  ...(haProgetti ? [{ label: "Projects", href: "/projects" }] : []),
+  { label: "About & contact", href: "/#chi-sono", scroll: false },
 ];
 
 /*
@@ -30,7 +30,8 @@ function vaiAllaSezione(e, href) {
   scrollToAnchor(hash);
 }
 
-export default function SiteNav() {
+export default function SiteNav({ haProgetti = false }) {
+  const VOCI = vociMenu(haProgetti);
   const pathname = usePathname();
   const suProgetti = pathname?.startsWith("/projects") ?? false;
   const [menuAperto, setMenuAperto] = useState(false);
@@ -154,7 +155,7 @@ export default function SiteNav() {
                         setMenuAperto(false);
                         vaiAllaSezione(e, v.href);
                       }}
-                      className="inline-flex min-h-14 items-center font-nome text-5xl text-sb-ink transition-colors hover:text-sb-accent"
+                      className="inline-flex min-h-14 items-center font-nome text-4xl text-sb-ink transition-colors hover:text-sb-accent sm:text-5xl"
                     >
                       {v.label}
                     </Link>

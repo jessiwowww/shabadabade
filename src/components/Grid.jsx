@@ -23,7 +23,6 @@ const VISTE = [
   // il tavolo vuole un mouse: col dito si trascinerebbe invece di scorrere
   { id: "tavolo", label: "Desk", soloDesktop: true },
 ];
-const VISTA_KEY = "sb-vista";
 
 function useFilterTransition(filtered) {
   const [displayed, setDisplayed] = useState(filtered);
@@ -204,26 +203,9 @@ export default function Grid({
   onClearTags,
 }) {
   const isDesktop = useIsDesktop();
+  // si parte sempre dalla griglia, anche se l'ultima volta era un'altra
   const [vista, setVista] = useState("griglia");
   const [filtriAperti, setFiltriAperti] = useState(false);
-
-  useEffect(() => {
-    try {
-      const salvata = localStorage.getItem(VISTA_KEY);
-      if (VISTE.some((v) => v.id === salvata)) setVista(salvata);
-    } catch {
-      // senza storage si parte sempre dalla griglia
-    }
-  }, []);
-
-  const scegliVista = (id) => {
-    setVista(id);
-    try {
-      localStorage.setItem(VISTA_KEY, id);
-    } catch {
-      // la scelta vale solo finché la pagina resta aperta
-    }
-  };
 
   const disponibili = VISTE.filter((v) => !v.soloDesktop || isDesktop);
   const vistaEffettiva = disponibili.some((v) => v.id === vista) ? vista : "griglia";
@@ -261,7 +243,7 @@ export default function Grid({
                 key={v.id}
                 type="button"
                 data-interactive
-                onClick={() => scegliVista(v.id)}
+                onClick={() => setVista(v.id)}
                 aria-pressed={vistaEffettiva === v.id}
                 className={`inline-flex min-h-11 items-center px-2.5 text-sm transition-colors ${
                   vistaEffettiva === v.id

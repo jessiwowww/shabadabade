@@ -3,6 +3,7 @@ import { Space_Grotesk, Inter, Caprasimo } from "next/font/google";
 import SiteChrome from "./SiteChrome.jsx";
 import { ThemeProvider } from "@/components/ThemeProvider.jsx";
 import { SITE_URL } from "@/lib/site.js";
+import { getCaseStudies } from "@/lib/content.js";
 import { NERO, BIANCO, TEMPERE } from "@/data/themes.js";
 import "./globals.css";
 
@@ -67,7 +68,9 @@ export const metadata = {
   alternates: { canonical: "/" },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const haProgetti = (await getCaseStudies()).length > 0;
+
   return (
     // lo script del tema scrive sullo <html>: la differenza col server
     // è voluta, non un errore di idratazione
@@ -83,7 +86,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
         <ThemeProvider>
-          <SiteChrome />
+          <SiteChrome haProgetti={haProgetti} />
           <main>{children}</main>
         </ThemeProvider>
       </body>

@@ -3,7 +3,9 @@ import { Adesivi, Poster, Cartolina, Download, Logo, Matita, Bottega, Busta } fr
 /*
   Cose che si comprano subito. `href` è la pagina del prodotto sul
   negozio scelto (Ko-fi, Stripe, Big Cartel…); finché manca, il
-  pulsante apre una mail già intestata. `prezzo` resta null finché
+  pulsante apre una mail già intestata. Più avanti: un modulo nella
+  pagina (Resend) al posto della mail, che dipende dal programma di
+  posta di chi visita. `prezzo` resta null finché
   Sharon non lo decide: un prezzo inventato non va mai online.
 */
 export const PRODOTTI = [

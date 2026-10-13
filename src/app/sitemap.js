@@ -7,7 +7,9 @@ export default async function sitemap() {
 
   return [
     { url: base, lastModified: new Date(), priority: 1 },
-    { url: `${base}/projects`, lastModified: new Date(), priority: 0.8 },
+    ...(caseStudies.length > 0
+      ? [{ url: `${base}/projects`, lastModified: new Date(), priority: 0.8 }]
+      : []),
     ...macroList().map((v) => ({
       url: `${base}/${macroSlug(v.etichetta)}`,
       lastModified: new Date(),

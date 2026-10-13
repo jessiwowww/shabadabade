@@ -44,7 +44,7 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
 
 | Indirizzo | Pagina |
 | --- | --- |
-| `/` | Home: hero, lavori (griglia / indice / tavolo), richiamo ai progetti, about giorno-notte, shop, commissioni, contatti |
+| `/` | Home: hero, lavori (griglia / indice / tavolo), richiamo ai progetti, shop, commissioni, about (shabadabade / Ogilvy Health), contatti |
 | `/projects` | Elenco dei progetti completi |
 | `/projects/<slug>` | Dettaglio di un progetto |
 | `/sitemap.xml`, `/robots.txt` | Generati dai contenuti |
@@ -59,7 +59,10 @@ npm run deploy       # pubblica lo studio su <nome>.sanity.studio
   ricompilare né ripubblicare** il sito.
 - **Fallback**: se Sanity è vuoto o non risponde, il sito mostra i dati
   di esempio di `src/data/` e lo scrive nei log del server. Non si
-  presenta mai rotto.
+  presenta mai rotto. **Al lancio** impostare `SB_DATI_ESEMPIO=no` su
+  Vercel: senza, togliendo l'ultimo progetto vero ricomparirebbero
+  quelli finti, e con loro la voce Projects nel menu (che c'è solo se
+  esiste almeno un progetto).
 - Tre tipi di contenuto (schemi in `studio/schemas/`): **Work (grid)** →
   griglia home e pin; **Project** → pagina Projects, contenuti a blocchi
   testo/immagine/video; **About** → documento unico con foto e bio.

@@ -3,6 +3,14 @@ import { PROJECTS } from "../data/projects";
 import { CASE_STUDIES } from "../data/caseStudies";
 
 /*
+  Dati di esempio per lavori e progetti quando Sanity non ne ha.
+  Utili finché il sito è una demo; al lancio si spengono con
+  SB_DATI_ESEMPIO=no, altrimenti togliendo l'ultimo progetto vero
+  ricomparirebbero quelli finti.
+*/
+const ESEMPI = process.env.SB_DATI_ESEMPIO !== "no";
+
+/*
   Unico punto in cui il sito parla con Sanity, lato server: il
   contenuto è già nell'HTML invece di comparire dopo il JavaScript.
   Se Sanity è vuoto o non risponde si usano i dati di esempio: il
@@ -103,7 +111,7 @@ const ABOUT_FALLBACK = {
     larghezza: 640,
     altezza: 800,
   },
-  bio: "I'm Sharon. I've always drawn, and for the past few years I've been doing it in London. By day I build presentations and visuals for the healthcare world; by night I draw logos, tattoos and t-shirts for people and places I care about. I like things made by hand, even when they end up on a screen.",
+  bio: "I'm Sharon. I've always drawn, and for the past few years I've been doing it in London. As shabadabade I draw logos, illustrations, local graphics and invitations for people and places I care about; at Ogilvy Health I build presentations and visuals for the healthcare world. I like things made by hand, even when they end up on a screen.",
 };
 
 async function query(groq, { etichetta }) {
@@ -120,13 +128,13 @@ async function query(groq, { etichetta }) {
 
 export async function getProjects() {
   const data = await query(PROJECTS_QUERY, { etichetta: "lavori" });
-  if (data?.length > 0) return data;
+  if (data?.length > 0 || !ESEMPI) return data ?? [];
   return [...PROJECTS].sort((a, b) => a.ordine - b.ordine);
 }
 
 export async function getCaseStudies() {
   const data = await query(CASE_STUDIES_QUERY, { etichetta: "progetti" });
-  if (data?.length > 0) return data;
+  if (data?.length > 0 || !ESEMPI) return data ?? [];
   // nei mock l'id è già leggibile: vale anche come slug
   return [...CASE_STUDIES]
     .sort((a, b) => a.ordine - b.ordine)

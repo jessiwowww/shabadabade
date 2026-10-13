@@ -1,25 +1,27 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { useThemeContext } from "@/components/ThemeProvider.jsx";
 import HeroArtwork from "@/components/HeroArtwork.jsx";
 import { heroPhotoFor } from "@/data/heroPhotos";
 import { NOME } from "@/data/nomeLettere";
 import { NERO, BIANCO, TEMPERE } from "@/data/themes";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
+import { Macchia } from "@/data/macchia";
 
-const BARATTOLI = [
+const COLORI = [
   { palette: NERO, mode: "nero" },
   { palette: BIANCO, mode: "bianco" },
   ...TEMPERE.map((t) => ({ palette: t, mode: "random" })),
 ];
 
-// inclinazione fissa per lettera: a caso cambierebbe a ogni render
+// inclinazione fissa: a caso cambierebbe a ogni render
 const INCLINA = [-6, 4, -3, 7, -5, 3, -7, 5, -4, 6, -3];
+const RUOTA_MACCHIA = [0, 140, 60, 210, 300, 30, 250, 110];
 
-function Lettera({ lettera, i, trascinabile, vincoli, onSposta }) {
+function Lettera({ lettera, i, trascinabile, onSposta }) {
   const contenuto = lettera.svg ? (
     lettera.multicolore ? (
       <img src={lettera.svg} alt="" draggable="false" className="h-[0.8em] w-auto" />
@@ -37,6 +39,21 @@ function Lettera({ lettera, i, trascinabile, vincoli, onSposta }) {
     lettera.char
   );
 
+  /*
+    Il salto parte all'ingresso del puntatore e arriva sempre in fondo:
+    legato al passaggio (whileHover) si vedeva solo fermandosi sopra,
+    passando veloce sembrava che non succedesse niente. Così una
+    passata sul nome fa l'onda. Sta in uno span interno perché lo
+    spostamento del trascinamento vive su quello esterno.
+  */
+  const salto = useAnimationControls();
+  const salta = () =>
+    salto.start({
+      y: ["0%", "-16%", "0%"],
+      rotate: [0, INCLINA[i % INCLINA.length], 0],
+      transition: { duration: 0.45, ease: "easeOut" },
+    });
+
   return (
     <motion.span
       aria-hidden="true"
@@ -46,15 +63,20 @@ function Lettera({ lettera, i, trascinabile, vincoli, onSposta }) {
       initial={{ opacity: 0, y: "40%", rotate: INCLINA[i % INCLINA.length] }}
       animate={{ opacity: 1, y: 0, rotate: 0 }}
       transition={{ delay: 0.1 + i * 0.045, type: "spring", stiffness: 260, damping: 18 }}
-      whileHover={{ y: "-8%", rotate: INCLINA[i % INCLINA.length] }}
+      onHoverStart={salta}
+      onTapStart={salta}
+      // niente dragConstraints: ridimensionando la finestra la libreria
+      // ricalcola la posizione dentro i limiti e sposta anche le lettere
+      // mai toccate. La sezione taglia quello che esce
       drag={trascinabile}
-      dragConstraints={vincoli}
       dragMomentum
-      dragTransition={{ power: 0.25, timeConstant: 180 }}
+      dragTransition={{ power: 0.15, timeConstant: 160 }}
       whileDrag={{ scale: 1.12, rotate: INCLINA[i % INCLINA.length] * 2, zIndex: 10 }}
       onDragEnd={onSposta}
     >
-      {contenuto}
+      <motion.span className="inline-block" animate={salto}>
+        {contenuto}
+      </motion.span>
     </motion.span>
   );
 }
@@ -66,7 +88,6 @@ export default function Hero() {
   // cambiando chiave le lettere ripartono dal loro posto
   const [giro, setGiro] = useState(0);
   const [spostate, setSpostate] = useState(false);
-  const sezione = useRef(null);
   const foto = heroPhotoFor(palette.nome);
 
   const dipingi = (b, e) => {
@@ -77,7 +98,6 @@ export default function Hero() {
   return (
     <section
       id="top"
-      ref={sezione}
       className="relative flex min-h-[92svh] flex-col justify-center overflow-hidden px-5 pb-14 pt-24 sm:px-8 lg:px-12"
     >
       <motion.p
@@ -101,7 +121,6 @@ export default function Hero() {
             lettera={lettera}
             i={i}
             trascinabile={isDesktop}
-            vincoli={sezione}
             onSposta={() => setSpostate(true)}
           />
         ))}
@@ -122,13 +141,14 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="mt-8"
+            // su telefono rubavano troppo spazio: lì c'è il selettore in basso
+            className="mt-8 hidden md:block"
           >
-            <p id="sb-barattoli" className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
+            <p id="sb-colori" className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
               Paint the page
             </p>
-            <div role="group" aria-labelledby="sb-barattoli" className="mt-3 flex flex-wrap gap-1">
-              {BARATTOLI.map((b) => {
+            <div role="group" aria-labelledby="sb-colori" className="mt-3 flex flex-wrap gap-1">
+              {COLORI.map((b, i) => {
                 const attivo = palette.nome === b.palette.nome;
                 return (
                   <motion.button
@@ -136,22 +156,22 @@ export default function Hero() {
                     type="button"
                     data-interactive
                     onClick={(e) => dipingi(b, e)}
-                    whileHover={{ y: -4, rotate: -6 }}
+                    whileHover={{ scale: 1.15, rotate: -10 }}
                     whileTap={{ scale: 0.85 }}
                     aria-label={`Paint the page ${b.palette.nome}`}
                     aria-pressed={attivo}
-                    className="flex h-11 w-9 items-end justify-center"
+                    className="flex h-11 w-11 items-center justify-center"
                   >
-                    {/* barattolo: coperchio e vetro col colore dentro */}
-                    <span aria-hidden="true" className="flex flex-col items-center">
-                      <span className="h-1.5 w-5 rounded-[2px] bg-sb-ink/70" />
-                      <span
-                        className={`h-7 w-6 rounded-b-md border-2 ${
-                          attivo ? "border-sb-accent" : "border-sb-ink/40"
-                        }`}
-                        style={{ background: b.palette.bg }}
-                      />
-                    </span>
+                    <Macchia
+                      className="h-9 w-9"
+                      rotate={RUOTA_MACCHIA[i % RUOTA_MACCHIA.length]}
+                      colore={b.palette.bg}
+                      bordo={
+                        attivo
+                          ? "var(--sb-accent)"
+                          : "color-mix(in srgb, var(--sb-ink) 40%, transparent)"
+                      }
+                    />
                   </motion.button>
                 );
               })}
@@ -239,8 +259,8 @@ function Timbro() {
           d="M 50,50 m -40,0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0"
         />
       </defs>
-      <text fontSize="8.4" fontWeight="700">
-        <textPath href="#sb-timbro" textLength="250" lengthAdjust="spacing">SHABADABADE · SHAZZA · SHAZMANIA · SHASHA ·</textPath>
+      <text fontSize="9.6" fontWeight="700">
+        <textPath href="#sb-timbro" textLength="250" lengthAdjust="spacing">DESIGN · ILLUSTRATION · AND MORE ·</textPath>
       </text>
     </motion.svg>
   );

@@ -1,23 +1,16 @@
 /*
-  Regola di Sharon: temi neutri → foto al tramonto, che porta il
-  colore; temi colorati → foto in bianco e nero coi disegni dello
-  stesso colore del tema, così non litiga col fondo.
-  giallo e rosa non hanno disegni del loro colore: multicolore.
+  Temi neutri → foto al tramonto, che porta il colore. Temi colorati
+  → foto in bianco e nero coi disegni di tutti i colori: quelli dello
+  stesso colore del fondo sparivano, e il risultato cambiava da tema
+  a tema.
 */
 export const HERO_PHOTOS = {
   nero: "/hero/tramonto-bianco.jpg",
   bianco: "/hero/tramonto-viola.jpg",
-
-  blu: "/hero/bn-blu.jpg",
-  viola: "/hero/bn-viola.jpg",
-  verde: "/hero/bn-verde.jpg",
-  mattone: "/hero/bn-rosso.jpg",
-  giallo: "/hero/bn-multicolore.jpg",
-  rosa: "/hero/bn-multicolore.jpg",
 };
 
-const RIPIEGO = "/hero/bn-multicolore.jpg";
+const COLORATA = "/hero/bn-multicolore.jpg";
 
 export function heroPhotoFor(nomePalette) {
-  return HERO_PHOTOS[nomePalette] ?? RIPIEGO;
+  return HERO_PHOTOS[nomePalette] ?? COLORATA;
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TEMPERE } from "@/data/themes";
+import { Macchia } from "@/data/macchia";
 
 // mimetica coi colori veri delle tempere: li prende da themes.js, così
 // aggiungendo una tempera cambia anche il simbolo
@@ -14,23 +15,15 @@ const MACCHIE = [
   "M12,13 C21,9 29,14 26,22 C23,30 13,30 9,23 Z",
 ];
 
-function Mimetica({ colori }) {
-  const id = useId();
+function mimetica(colori) {
   const [fondo, ...macchie] = colori;
   return (
-    <svg viewBox="0 0 40 40" className="h-full w-full" aria-hidden="true">
-      <defs>
-        <clipPath id={id}>
-          <circle cx="20" cy="20" r="20" />
-        </clipPath>
-      </defs>
-      <g clipPath={`url(#${id})`}>
-        <rect width="40" height="40" fill={fondo} />
-        {MACCHIE.map((d, i) => (
-          <path key={i} d={d} fill={macchie[i % macchie.length]} />
-        ))}
-      </g>
-    </svg>
+    <>
+      <rect width="40" height="40" fill={fondo} />
+      {MACCHIE.map((d, i) => (
+        <path key={i} d={d} fill={macchie[i % macchie.length]} />
+      ))}
+    </>
   );
 }
 
@@ -68,16 +61,13 @@ export default function ThemeSwitcher({ mode, setMode }) {
 
   const attiva = OPZIONI.find((o) => o.mode === mode) ?? OPZIONI[0];
 
-  const Cerchio = ({ opt }) => (
-    <span
-      aria-hidden="true"
-      className={`block h-5 w-5 overflow-hidden rounded-full ${
-        opt.border ? "border border-sb-ink/40" : ""
-      }`}
-      style={opt.mimetica ? undefined : { background: opt.swatch }}
-    >
-      {opt.mimetica && <Mimetica colori={TEMPERE.map((t) => t.bg)} />}
-    </span>
+  const Cerchio = ({ opt, attivo }) => (
+    <Macchia
+      className="h-7 w-7"
+      colore={opt.swatch}
+      riempimento={opt.mimetica ? mimetica(TEMPERE.map((t) => t.bg)) : null}
+      bordo={attivo ? "var(--sb-accent)" : opt.border ? "color-mix(in srgb, var(--sb-ink) 45%, transparent)" : null}
+    />
   );
 
   return (
@@ -98,10 +88,11 @@ export default function ThemeSwitcher({ mode, setMode }) {
           type="button"
           data-interactive
           onClick={() => setAperto(true)}
+          whileHover={{ rotate: -14, scale: 1.08 }}
           whileTap={{ scale: 0.88 }}
           aria-label={`Site colour: ${attiva.label}. Change it`}
           aria-expanded={false}
-          className="flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-sb-accent"
+          className="flex h-9 w-9 items-center justify-center"
         >
           <Cerchio opt={attiva} />
         </motion.button>
@@ -129,16 +120,13 @@ export default function ThemeSwitcher({ mode, setMode }) {
                   });
                   setAperto(false);
                 }}
+                whileHover={{ rotate: -14, scale: 1.08 }}
                 whileTap={{ scale: 0.88 }}
                 aria-label={`${opt.label} theme`}
                 aria-pressed={isAttiva}
-                className={`flex h-9 w-9 items-center justify-center rounded-full transition-shadow ${
-                  isAttiva
-                    ? "ring-2 ring-sb-accent"
-                    : "hover:ring-2 hover:ring-sb-ink/30"
-                }`}
+                className="flex h-9 w-9 items-center justify-center"
               >
-                <Cerchio opt={opt} />
+                <Cerchio opt={opt} attivo={isAttiva} />
               </motion.button>
             );
           })}

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import Progetti from "@/components/Progetti.jsx";
 import { getCaseStudies } from "@/lib/content.js";
 
@@ -17,6 +18,8 @@ export const metadata = {
 
 export default async function ProjectsPage() {
   const caseStudies = await getCaseStudies();
+  // senza progetti la pagina non esiste, come la voce nel menu
+  if (caseStudies.length === 0) notFound();
 
   return <Progetti caseStudies={caseStudies} />;
 }

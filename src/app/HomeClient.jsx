@@ -193,8 +193,9 @@ export default function HomeClient({
         onClearTags={clearTags}
       />
       <ProgettiTeaser caseStudies={caseStudies} />
-      <ChiSono about={about} />
       <Supporto onPick={pickCategory} />
+      {/* vicini: nel menu sono una voce sola */}
+      <ChiSono about={about} />
       <Contatti />
 
       <Lightbox

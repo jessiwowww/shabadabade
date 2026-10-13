@@ -28,7 +28,7 @@ function Prodotto({ p, i }) {
         rel={esterno ? "noreferrer" : undefined}
         className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 whitespace-nowrap rounded-full bg-sb-ink px-4 text-sm font-semibold sm:px-5 text-sb-bg transition-colors hover:bg-sb-accent"
       >
-        {esterno ? "Buy" : "Order by email"}
+        Order
         <span aria-hidden="true">→</span>
         <span className="sr-only">: {p.nome}</span>
       </a>
