@@ -312,7 +312,9 @@ export default function ProgettoDettaglio({ caseStudy, precedente, successivo })
             router.push(`/projects/${precedente.slug}`);
           }
         }}
-        className="min-h-screen px-5 pb-16 pt-28 sm:px-8 lg:px-12"
+        /* larghezza massima: a tutto schermo le immagini arrivavano
+           da bordo a bordo ed era troppo */
+        className="mx-auto min-h-screen max-w-6xl px-5 pb-16 pt-28 sm:px-8 lg:px-12"
       >
         <Link
           href="/projects"
@@ -322,8 +324,11 @@ export default function ProgettoDettaglio({ caseStudy, precedente, successivo })
           ← All projects
         </Link>
 
-        <header className="mt-6 grid gap-10 lg:grid-cols-[1fr_minmax(0,34rem)] lg:items-end lg:gap-16">
-          <div>
+        {/* titolo e dati sopra, copertina sotto a tutta colonna: con
+            l'affiancamento, un titolo corto lasciava l'immagine
+            sospesa a destra in mezzo al vuoto */}
+        <header className="mt-6">
+          <div className="max-w-3xl">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -359,14 +364,17 @@ export default function ProgettoDettaglio({ caseStudy, precedente, successivo })
             </motion.dl>
           </div>
 
-          <img
+          <motion.img
             ref={copertina}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
             src={caseStudy.copertina.url}
             alt=""
             width={caseStudy.copertina.larghezza}
             height={caseStudy.copertina.altezza}
             fetchPriority="high"
-            className="block max-h-[78vh] w-full object-contain"
+            className="mt-12 block h-auto w-full"
           />
         </header>
 
