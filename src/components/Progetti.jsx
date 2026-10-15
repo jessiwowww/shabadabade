@@ -8,7 +8,8 @@ import { ricordaCopertina } from "@/lib/transizioni";
 const INCLINA = [3, -2.5, 2, -3.5];
 
 export const pezzi = (cs) => cs.contenuti.filter((b) => b.tipo !== "testo").length;
-export const anno = (cs) => new Date(cs.data).getFullYear();
+// la data è facoltativa in Sanity: senza, non si stampa niente
+export const anno = (cs) => (cs.data ? new Date(cs.data).getFullYear() : null);
 
 function Voce({ cs, i }) {
   const copertina = useRef(null);
@@ -41,7 +42,8 @@ function Voce({ cs, i }) {
           </span>
           <span className="mt-6 inline-flex items-center gap-3 text-sm">
             <span className="text-sb-ink-soft">
-              {anno(cs)} · {pezzi(cs)} pieces
+              {anno(cs) ? `${anno(cs)} · ` : ""}
+              {pezzi(cs)} pieces
             </span>
             <span
               aria-hidden="true"

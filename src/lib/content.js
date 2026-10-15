@@ -17,7 +17,9 @@ const ESEMPI = process.env.SB_DATI_ESEMPIO !== "no";
   sito non deve mai presentarsi rotto.
 */
 
-const PROJECTS_QUERY = `*[_type == "progetto"] | order(ordine asc) {
+// ordine quando c'è, altrimenti dal più recente caricato: così non
+// serve numerare ogni lavoro per vederlo comparire al posto giusto
+const PROJECTS_QUERY = `*[_type == "progetto"] | order(coalesce(ordine, 999999) asc, _createdAt desc) {
   "id": _id,
   titolo,
   "immagine": {
@@ -56,7 +58,7 @@ const PROJECTS_QUERY = `*[_type == "progetto"] | order(ordine asc) {
 
 // coalesce sullo slug: finché Sharon non lo compila la pagina esiste
 // comunque, con un indirizzo brutto
-const CASE_STUDIES_QUERY = `*[_type == "progettoCompleto"] | order(ordine asc) {
+const CASE_STUDIES_QUERY = `*[_type == "progettoCompleto"] | order(coalesce(ordine, 999999) asc, _createdAt desc) {
   "id": _id,
   "slug": coalesce(slug.current, _id),
   titolo,

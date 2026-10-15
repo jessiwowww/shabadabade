@@ -301,12 +301,14 @@ export default function Lightbox({
               <p className="mt-4 text-sm leading-relaxed text-sb-ink-soft">
                 {project.descrizione}
               </p>
-              <p className="mt-4 text-xs text-sb-ink-soft/70">
-                {new Date(project.data).toLocaleDateString("en-GB", {
-                  year: "numeric",
-                  month: "long",
-                })}
-              </p>
+              {project.data && (
+                <p className="mt-4 text-xs text-sb-ink-soft/70">
+                  {new Date(project.data).toLocaleDateString("en-GB", {
+                    year: "numeric",
+                    month: "long",
+                  })}
+                </p>
+              )}
             </motion.div>
           </motion.div>
         </motion.div>

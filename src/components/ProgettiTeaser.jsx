@@ -40,7 +40,8 @@ function Polaroid({ cs, i }) {
               {cs.titolo}
             </span>
             <span className="mt-1 block text-xs text-sb-ink-soft">
-              {anno(cs)} · {pezzi(cs)} pieces
+              {anno(cs) ? `${anno(cs)} · ` : ""}
+              {pezzi(cs)} pieces
             </span>
           </span>
         </Link>

@@ -4,6 +4,8 @@
   trascinandoli: testo, immagine o video, nell'ordine che vuoi.
   NB: i `name` dei campi/blocchi non si toccano (il sito li interroga così).
 */
+import { avvisoPesoImmagine } from "./validazioni";
+
 const bloccoTesto = {
   name: "bloccoTesto",
   title: "Text",
@@ -116,7 +118,7 @@ export default {
       type: "image",
       options: { hotspot: true },
       description: "The image representing this project in the list.",
-      validation: (r) => r.required(),
+      validation: (r) => [r.required(), avvisoPesoImmagine(r)],
     },
     {
       name: "descrizione",
@@ -128,16 +130,16 @@ export default {
     },
     {
       name: "data",
-      title: "Date",
+      title: "Date (optional)",
       type: "date",
-      validation: (r) => r.required(),
+      description: "Se la lasci vuota, il progetto semplicemente non la mostra.",
     },
     {
       name: "ordine",
-      title: "Order",
+      title: "Order (optional)",
       type: "number",
-      description: "Position in the list: lower numbers come first.",
-      validation: (r) => r.required(),
+      description:
+        "Serve solo per forzare una posizione: senza, i progetti vanno dal più recente caricato.",
     },
     {
       name: "contenuti",
@@ -152,7 +154,10 @@ export default {
     {
       title: "List order",
       name: "ordineAsc",
-      by: [{ field: "ordine", direction: "asc" }],
+      by: [
+        { field: "ordine", direction: "asc" },
+        { field: "_createdAt", direction: "desc" },
+      ],
     },
   ],
   preview: {

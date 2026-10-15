@@ -4,6 +4,8 @@
   NB: i `name` dei campi non si toccano (il sito li interroga così).
 */
 
+import { avvisoPesoImmagine } from "./validazioni";
+
 /*
   Voci dell'album: le foto e i video "figli" di questo lavoro.
   Stanno dentro al documento della copertina, così si caricano tutti
@@ -97,7 +99,7 @@ export default {
       options: { hotspot: true },
       description:
         "Any proportions: the grid adapts. Animated GIFs upload here like normal images.",
-      validation: (r) => r.required(),
+      validation: (r) => [r.required(), avvisoPesoImmagine(r)],
     },
     {
       name: "video",
@@ -133,23 +135,26 @@ export default {
     },
     {
       name: "data",
-      title: "Date",
+      title: "Date (optional)",
       type: "date",
-      validation: (r) => r.required(),
+      description: "Se la lasci vuota, il lavoro semplicemente non la mostra.",
     },
     {
       name: "ordine",
-      title: "Order",
+      title: "Order (optional)",
       type: "number",
-      description: "Position in the grid: lower numbers come first.",
-      validation: (r) => r.required(),
+      description:
+        "Serve solo per forzare una posizione: senza, i lavori vanno dal più recente caricato.",
     },
   ],
   orderings: [
     {
       title: "Grid order",
       name: "ordineAsc",
-      by: [{ field: "ordine", direction: "asc" }],
+      by: [
+        { field: "ordine", direction: "asc" },
+        { field: "_createdAt", direction: "desc" },
+      ],
     },
   ],
   preview: {

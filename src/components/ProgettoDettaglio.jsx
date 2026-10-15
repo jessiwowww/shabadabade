@@ -346,10 +346,12 @@ export default function ProgettoDettaglio({ caseStudy, precedente, successivo })
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mt-8 flex gap-10 text-sm"
             >
-              <div>
-                <dt className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">Year</dt>
-                <dd className="mt-1 font-semibold">{anno(caseStudy)}</dd>
-              </div>
+              {anno(caseStudy) && (
+                <div>
+                  <dt className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">Year</dt>
+                  <dd className="mt-1 font-semibold">{anno(caseStudy)}</dd>
+                </div>
+              )}
               <div>
                 <dt className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">Pieces</dt>
                 <dd className="mt-1 font-semibold">{pezzi(caseStudy)}</dd>
