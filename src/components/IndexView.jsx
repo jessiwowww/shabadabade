@@ -26,7 +26,7 @@ export default function IndexView({ projects, onOpen }) {
 
   return (
     <>
-      <ol className="border-t border-sb-ink/15" onPointerLeave={() => setSopra(null)}>
+      <ul className="border-t border-sb-ink/15" onPointerLeave={() => setSopra(null)}>
         <AnimatePresence initial={false}>
           {projects.map((p, i) => (
             <motion.li
@@ -44,11 +44,8 @@ export default function IndexView({ projects, onOpen }) {
                 onClick={() => onOpen(p, null)}
                 onPointerEnter={() => setSopra(p)}
                 onFocus={() => setSopra(null)}
-                className="group grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 py-4 text-left sm:grid-cols-[3rem_1fr_minmax(0,16rem)_4rem] sm:py-5"
+                className="group grid w-full grid-cols-[1fr_auto] items-center gap-x-4 py-4 text-left sm:grid-cols-[1fr_minmax(0,16rem)_4rem] sm:py-5"
               >
-                <span className="text-xs tabular-nums text-sb-ink-soft">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <span className="flex min-w-0 items-center gap-3">
                   <img
                     src={p.immagine.url}
@@ -73,7 +70,7 @@ export default function IndexView({ projects, onOpen }) {
             </motion.li>
           ))}
         </AnimatePresence>
-      </ol>
+      </ul>
 
       {isDesktop && (
         <motion.div

@@ -27,12 +27,8 @@ function Voce({ cs, i }) {
         href={`/projects/${cs.slug}`}
         data-interactive
         onClick={() => ricordaCopertina(cs.slug, copertina.current)}
-        className="group grid gap-6 py-10 md:grid-cols-[4rem_1fr_minmax(0,20rem)] md:items-center md:gap-10 lg:grid-cols-[5rem_1fr_minmax(0,24rem)] lg:py-14"
+        className="group grid gap-6 py-10 md:grid-cols-[1fr_minmax(0,20rem)] md:items-center md:gap-10 lg:grid-cols-[1fr_minmax(0,24rem)] lg:py-14"
       >
-        <span className="font-nome text-3xl text-sb-accent md:self-start md:pt-2">
-          {String(i + 1).padStart(2, "0")}
-        </span>
-
         <span className="md:order-none order-last block">
           <span className="block font-display text-4xl font-bold leading-[1.02] tracking-tight transition-colors group-hover:text-sb-accent sm:text-5xl lg:text-6xl">
             {cs.titolo}
@@ -88,11 +84,14 @@ export default function Progetti({ caseStudies }) {
         in between.
       </p>
 
-      <ol className="mt-14 border-t border-sb-ink/15">
+      {/* ul e non ol: un numero d'elenco, anche solo letto a voce,
+          sembrerebbe un identificativo del progetto e invece cambia
+          con l'ordine */}
+      <ul className="mt-14 border-t border-sb-ink/15">
         {caseStudies.map((cs, i) => (
           <Voce key={cs.id} cs={cs} i={i} />
         ))}
-      </ol>
+      </ul>
     </section>
   );
 }
