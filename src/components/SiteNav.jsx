@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
 import { scrollToAnchor } from "@/lib/anchorScroll";
+import { EMAIL, mailto } from "@/data/contatti";
 
 // scroll={false}: ci pensa scrollToAnchor, o Next salta in cima e
 // annulla lo scorrimento verso la sezione
@@ -164,11 +165,11 @@ export default function SiteNav({ haProgetti = false }) {
               </ul>
             </nav>
             <a
-              href="mailto:hello@sharonbertoncello.com"
+              href={mailto()}
               data-interactive
               className="inline-flex min-h-11 items-center text-sm text-sb-ink-soft underline underline-offset-4"
             >
-              hello@sharonbertoncello.com
+              {EMAIL}
             </a>
           </motion.div>
         )}
