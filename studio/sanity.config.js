@@ -23,12 +23,17 @@ export default defineConfig({
             S.documentTypeListItem("progetto").title("Work (grid)"),
             S.documentTypeListItem("progettoCompleto").title("Projects"),
             S.divider(),
-            // "About" è un documento unico: si apre sempre lo stesso
+            /*
+              "About" è un documento unico: si apre sempre lo stesso.
+              L'identificativo è "about" e non "chiSono" perché quello
+              vecchio è stato cancellato: Sanity ne tiene la lapide e
+              lo Studio mostra i campi bloccati finché esiste. Il sito
+              cerca per tipo, non per identificativo, quindi il nome
+              qui si può cambiare senza toccare altro.
+            */
             S.listItem()
               .title("About")
-              .child(
-                S.document().schemaType("chiSono").documentId("chiSono")
-              ),
+              .child(S.document().schemaType("chiSono").documentId("about")),
           ]),
     }),
     visionTool(),

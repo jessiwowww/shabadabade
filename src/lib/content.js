@@ -98,7 +98,9 @@ const CASE_STUDIES_QUERY = `*[_type == "progettoCompleto"] | order(coalesce(ordi
   }, [])
 }`;
 
-const ABOUT_QUERY = `*[_type == "chiSono"][0]{
+// il più recente, non "il primo che capita": se un vecchio documento
+// About tornasse a galla, vincerebbe comunque quello aggiornato
+const ABOUT_QUERY = `*[_type == "chiSono"] | order(_updatedAt desc)[0]{
   bio,
   "foto": foto.asset->{
     "url": url,
