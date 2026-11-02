@@ -111,7 +111,7 @@ export default function Lightbox({
           onClick={onClose}
           role="dialog"
           aria-modal="true"
-          aria-label={project.titolo}
+          aria-label={project.titolo || "Project"}
           data-interactive
         >
           <motion.div
@@ -237,7 +237,7 @@ export default function Lightbox({
                   ) : (
                     <img
                       src={p.immagine.url}
-                      alt={p.titolo}
+                      alt={p.titolo ?? ""}
                       width={p.immagine.larghezza}
                       height={p.immagine.altezza}
                       loading={i === index ? "eager" : "lazy"}
@@ -255,9 +255,11 @@ export default function Lightbox({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: origine ? 0.25 : 0, duration: 0.35 }}
               className="px-6 py-6 lg:flex lg:w-72 lg:shrink-0 lg:flex-col lg:justify-center lg:px-0">
-              <h3 className="font-display text-2xl font-bold tracking-tight">
-                {project.titolo}
-              </h3>
+              {project.titolo && (
+                <h3 className="font-display text-2xl font-bold tracking-tight">
+                  {project.titolo}
+                </h3>
+              )}
               <div className="mt-3 flex flex-wrap gap-2">
                 {project.tags.map((tag) => {
                   const active = activeTags?.has(tag);

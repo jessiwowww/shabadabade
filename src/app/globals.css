@@ -51,6 +51,19 @@ body {
 /* Il cursore di sistema resta SEMPRE visibile: mai cursor: none. */
 
 /*
+  Le immagini sono di Sharon: si scoraggia il prelievo facile —
+  trascinamento sul desktop e "tieni premuto → salva" sul telefono.
+  Non è una protezione vera: chi vuole fa uno screenshot o apre
+  l'indirizzo dell'immagine. L'unica difesa seria è la filigrana.
+*/
+img,
+video {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
   Scrollbar sottile e in tinta col tema per la sidebar dei tag
   (e il drawer mobile): traccia invisibile, pomello discreto che
   si scurisce al passaggio.

@@ -33,7 +33,7 @@ export default function AlbumViewer({ project, onClose }) {
           onClick={onClose}
           role="dialog"
           aria-modal="true"
-          aria-label={`Album: ${project.titolo}`}
+          aria-label={project.titolo ? `Album: ${project.titolo}` : "Album"}
           data-interactive
         >
           <div
@@ -82,7 +82,7 @@ export default function AlbumViewer({ project, onClose }) {
                 ) : (
                   <img
                     src={voce.immagine.url}
-                    alt={voce.didascalia ?? project.titolo}
+                    alt={voce.didascalia ?? project.titolo ?? ""}
                     width={voce.immagine.larghezza}
                     height={voce.immagine.altezza}
                     loading="lazy"

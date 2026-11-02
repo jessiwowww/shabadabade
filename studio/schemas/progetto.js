@@ -65,9 +65,9 @@ export default {
   fields: [
     {
       name: "titolo",
-      title: "Title",
+      title: "Title (optional)",
       type: "string",
-      validation: (r) => r.required(),
+      description: "Senza titolo il lavoro compare lo stesso, solo muto.",
     },
     {
       /*
@@ -159,5 +159,11 @@ export default {
   ],
   preview: {
     select: { title: "titolo", subtitle: "data", media: "immagine" },
+    // senza titolo l'elenco mostrerebbe solo "Untitled"
+    prepare: ({ title, subtitle, media }) => ({
+      title: title || "(senza titolo)",
+      subtitle,
+      media,
+    }),
   },
 };

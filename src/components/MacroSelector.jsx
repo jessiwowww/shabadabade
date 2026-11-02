@@ -7,7 +7,10 @@ import { macroList } from "@/data/macroCategories";
 // i tanti, sono le parole che dicono di che lavoro si tratta.
 // Niente "All": si torna a tutto ricliccando quella attiva
 export default function MacroSelector({ attiva, onPick, conteggi }) {
-  const voci = macroList();
+  // le categorie senza contenuti non si mostrano affatto: una parola
+  // spenta che non si può premere è solo una promessa non mantenuta
+  const voci = macroList().filter((v) => (conteggi.get(v.etichetta) ?? 0) > 0);
+  if (voci.length === 0) return null;
 
   return (
     <div
@@ -16,30 +19,22 @@ export default function MacroSelector({ attiva, onPick, conteggi }) {
       aria-label="Categories"
     >
       {voci.map(({ etichetta }) => {
-        const conteggio = conteggi.get(etichetta) ?? 0;
-        const vuota = conteggio === 0;
         const isAttiva = attiva === etichetta;
         return (
           <motion.button
             key={etichetta}
             type="button"
             data-interactive
-            whileTap={vuota ? undefined : { scale: 0.97 }}
-            onClick={() => !vuota && onPick(isAttiva ? null : etichetta)}
-            disabled={vuota}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => onPick(isAttiva ? null : etichetta)}
             aria-pressed={isAttiva}
             className={`font-display text-3xl font-bold tracking-tight transition-colors sm:text-4xl lg:text-5xl ${
               isAttiva
                 ? "text-sb-accent"
-                : vuota
-                  ? "cursor-not-allowed text-sb-ink-soft/25"
-                  : "text-sb-ink-soft hover:text-sb-ink"
+                : "text-sb-ink-soft hover:text-sb-ink"
             }`}
           >
             {etichetta}
-            <sup className="ml-0.5 align-super text-xs font-semibold tabular-nums opacity-70 sm:text-sm">
-              {conteggio}
-            </sup>
           </motion.button>
         );
       })}

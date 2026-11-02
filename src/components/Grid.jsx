@@ -3,11 +3,8 @@ import Masonry from "react-responsive-masonry";
 import { AnimatePresence, motion } from "framer-motion";
 import { isAutoloadSuppressed } from "../lib/anchorScroll";
 import { useColumnCount } from "../hooks/useColumnCount";
-import { useIsDesktop } from "../hooks/useIsDesktop";
 import MacroSelector from "./MacroSelector.jsx";
 import TagFilters from "./TagFilters.jsx";
-import IndexView from "./IndexView.jsx";
-import DeskView from "./DeskView.jsx";
 
 // uscita in due tempi: prima la dissolvenza, poi la rimozione, o i
 // superstiti si riposizionano prima che gli altri siano spariti
@@ -17,12 +14,18 @@ const EXIT_MS = 240;
 // arriva scorrendo
 const BATCH = 12;
 
-const VISTE = [
-  { id: "griglia", label: "Grid" },
-  { id: "indice", label: "Index" },
-  // il tavolo vuole un mouse: col dito si trascinerebbe invece di scorrere
-  { id: "tavolo", label: "Desk", soloDesktop: true },
-];
+// mescolata con seme: useMemo può rigirare lo stesso calcolo, e con
+// Math.random l'ordine cambierebbe senza che nessuno abbia premuto
+function mescola(elenco, seme) {
+  let s = (seme * 2654435761) >>> 0;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const out = [...elenco];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 function useFilterTransition(filtered) {
   const [displayed, setDisplayed] = useState(filtered);
@@ -49,6 +52,25 @@ function useFilterTransition(filtered) {
   }, [filtered]);
 
   return { displayed, leavingIds };
+}
+
+function ShuffleIcon({ size = 15 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M1.5 4h3l7 8h3M1.5 12h3l7-8h3" />
+      <path d="M12 1.5 14.5 4 12 6.5M12 9.5 14.5 12 12 14.5" />
+    </svg>
+  );
 }
 
 export function AlbumIcon({ size = 13 }) {
@@ -84,7 +106,9 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
         data-interactive
         onClick={() => onOpen(project, media.current?.getBoundingClientRect())}
         className="block w-full text-left"
-        aria-label={`Open project: ${project.titolo}`}
+        aria-label={
+          project.titolo ? `Open project: ${project.titolo}` : "Open project"
+        }
       >
         {project.video ? (
           <video
@@ -104,7 +128,7 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
           <img
             ref={media}
             src={immagine.url}
-            alt={project.titolo}
+            alt={project.titolo ?? ""}
             width={immagine.larghezza}
             height={immagine.altezza}
             loading="lazy"
@@ -112,15 +136,22 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
             className="block h-auto w-full"
           />
         )}
-        {/* etichetta come un adesivo appena attaccato */}
-        <span className="pointer-events-none absolute bottom-3 left-3 max-w-[85%] -rotate-2 translate-y-3 bg-sb-accent px-2.5 py-1.5 text-sb-bg opacity-0 shadow-md transition-[opacity,transform] duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
-          <span className="block font-display text-base font-bold leading-tight">
-            {project.titolo}
+        {/* adesivo appena attaccato; senza titolo né tag non si
+            attacca affatto, invece di restare vuoto */}
+        {(project.titolo || project.tags?.length > 0) && (
+          <span className="pointer-events-none absolute bottom-3 left-3 max-w-[85%] -rotate-2 translate-y-3 bg-sb-accent px-2.5 py-1.5 text-sb-bg opacity-0 shadow-md transition-[opacity,transform] duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+            {project.titolo && (
+              <span className="block font-display text-base font-bold leading-tight">
+                {project.titolo}
+              </span>
+            )}
+            {project.tags?.length > 0 && (
+              <span className="block text-[0.7rem] opacity-75">
+                {project.tags.join(" · ")}
+              </span>
+            )}
           </span>
-          <span className="block text-[0.7rem] opacity-75">
-            {project.tags.join(" · ")}
-          </span>
-        </span>
+        )}
       </button>
 
       {album.length > 0 && (
@@ -128,7 +159,7 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
           type="button"
           data-interactive
           onClick={() => onOpenAlbum(project)}
-          aria-label={`Open the album of ${project.titolo} — ${album.length} items`}
+          aria-label={`Open the album${project.titolo ? ` of ${project.titolo}` : ""} — ${album.length} items`}
           className="absolute right-2 top-2 flex min-h-9 items-center gap-1.5 rounded-full bg-sb-bg px-2.5 py-1 text-xs font-semibold text-sb-ink transition-colors hover:text-sb-accent"
         >
           <AlbumIcon />
@@ -140,13 +171,15 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
   );
 }
 
-function Masonria({ projects, onOpen, onOpenAlbum }) {
+function Masonria({ projects, resetKey, onOpen, onOpenAlbum }) {
   const [visibleCount, setVisibleCount] = useState(BATCH);
   const sentinelRef = useRef(null);
   const colonne = useColumnCount();
 
-  // nuovo elenco (filtri cambiati o dati arrivati): riparti dal primo blocco
-  useEffect(() => setVisibleCount(BATCH), [projects]);
+  // nuovo elenco (filtri cambiati o dati arrivati): riparti dal primo
+  // blocco. Non dipende da projects: una mescolata cambia l'ordine ma
+  // non l'insieme, e farebbe sparire tutto quello già caricato
+  useEffect(() => setVisibleCount(BATCH), [resetKey]);
 
   const hasMore = visibleCount < projects.length;
   // memo obbligatorio: un'identità nuova a ogni render farebbe
@@ -202,13 +235,14 @@ export default function Grid({
   onToggleTag,
   onClearTags,
 }) {
-  const isDesktop = useIsDesktop();
-  // si parte sempre dalla griglia, anche se l'ultima volta era un'altra
-  const [vista, setVista] = useState("griglia");
   const [filtriAperti, setFiltriAperti] = useState(false);
+  // 0 = l'ordine deciso in Sanity; si mescola solo su richiesta
+  const [mescolata, setMescolata] = useState(0);
 
-  const disponibili = VISTE.filter((v) => !v.soloDesktop || isDesktop);
-  const vistaEffettiva = disponibili.some((v) => v.id === vista) ? vista : "griglia";
+  const ordinati = useMemo(
+    () => (mescolata === 0 ? projects : mescola(projects, mescolata)),
+    [projects, mescolata]
+  );
 
   return (
     <section id="lavori" className="scroll-mt-20 px-5 py-14 sm:px-8 lg:px-12">
@@ -237,24 +271,23 @@ export default function Grid({
             )}
           </button>
 
-          <div role="group" aria-label="View" className="flex items-center gap-1">
-            {disponibili.map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                data-interactive
-                onClick={() => setVista(v.id)}
-                aria-pressed={vistaEffettiva === v.id}
-                className={`inline-flex min-h-11 items-center px-2.5 text-sm transition-colors ${
-                  vistaEffettiva === v.id
-                    ? "font-semibold text-sb-accent underline decoration-2 underline-offset-8"
-                    : "text-sb-ink-soft hover:text-sb-ink"
-                }`}
-              >
-                {v.label}
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            data-interactive
+            onClick={() => setMescolata((m) => m + 1)}
+            disabled={projects.length < 2}
+            className="inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink disabled:opacity-40"
+          >
+            <motion.span
+              aria-hidden="true"
+              className="inline-flex"
+              animate={{ rotate: mescolata * 180 }}
+              transition={{ type: "spring", stiffness: 180, damping: 16 }}
+            >
+              <ShuffleIcon />
+            </motion.span>
+            Shuffle the grid
+          </button>
         </div>
 
         <AnimatePresence initial={false}>
@@ -283,12 +316,13 @@ export default function Grid({
 
       {projects.length === 0 ? (
         <p className="text-sb-ink-soft">Nothing with these tags (yet).</p>
-      ) : vistaEffettiva === "indice" ? (
-        <IndexView projects={projects} onOpen={onOpen} />
-      ) : vistaEffettiva === "tavolo" ? (
-        <DeskView projects={projects} onOpen={onOpen} />
       ) : (
-        <Masonria projects={projects} onOpen={onOpen} onOpenAlbum={onOpenAlbum} />
+        <Masonria
+          projects={ordinati}
+          resetKey={projects}
+          onOpen={onOpen}
+          onOpenAlbum={onOpenAlbum}
+        />
       )}
     </section>
   );
