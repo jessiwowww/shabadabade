@@ -14,17 +14,24 @@ const EXIT_MS = 240;
 // arriva scorrendo
 const BATCH = 12;
 
-// mescolata con seme: useMemo può rigirare lo stesso calcolo, e con
-// Math.random l'ordine cambierebbe senza che nessuno abbia premuto
-function mescola(elenco, seme) {
-  let s = (seme * 2654435761) >>> 0;
-  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+function mescola(elenco) {
   const out = [...elenco];
   for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rnd() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1));
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
+}
+
+const stessoOrdine = (a, b) => a.every((v, i) => v === b[i]);
+
+// con due soli lavori una mescolata su due ricade sull'ordine di
+// partenza: si preme e non succede niente. Si rimescola finché
+// qualcosa si muove davvero
+function mescolaDiverso(ids) {
+  let nuovo = mescola(ids);
+  while (stessoOrdine(nuovo, ids)) nuovo = mescola(ids);
+  return nuovo;
 }
 
 function useFilterTransition(filtered) {
@@ -236,13 +243,24 @@ export default function Grid({
   onClearTags,
 }) {
   const [filtriAperti, setFiltriAperti] = useState(false);
-  // 0 = l'ordine deciso in Sanity; si mescola solo su richiesta
-  const [mescolata, setMescolata] = useState(0);
+  // elenco di id; null = l'ordine deciso in Sanity
+  const [ordine, setOrdine] = useState(null);
 
-  const ordinati = useMemo(
-    () => (mescolata === 0 ? projects : mescola(projects, mescolata)),
-    [projects, mescolata]
-  );
+  // cambiando filtro si riparte dall'ordine vero: una mescolata vale
+  // per quello che si sta guardando, non per sempre
+  useEffect(() => setOrdine(null), [projects]);
+
+  const ordinati = useMemo(() => {
+    if (!ordine) return projects;
+    const perId = new Map(projects.map((p) => [p.id, p]));
+    const scelti = ordine.map((id) => perId.get(id)).filter(Boolean);
+    return scelti.length === projects.length ? scelti : projects;
+  }, [projects, ordine]);
+
+  const rimescola = () => {
+    if (ordinati.length < 2) return;
+    setOrdine(mescolaDiverso(ordinati.map((p) => p.id)));
+  };
 
   return (
     <section id="lavori" className="scroll-mt-20 px-5 py-14 sm:px-8 lg:px-12">
@@ -274,18 +292,11 @@ export default function Grid({
           <button
             type="button"
             data-interactive
-            onClick={() => setMescolata((m) => m + 1)}
+            onClick={rimescola}
             disabled={projects.length < 2}
             className="inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink disabled:opacity-40"
           >
-            <motion.span
-              aria-hidden="true"
-              className="inline-flex"
-              animate={{ rotate: mescolata * 180 }}
-              transition={{ type: "spring", stiffness: 180, damping: 16 }}
-            >
-              <ShuffleIcon />
-            </motion.span>
+            <ShuffleIcon />
             Shuffle the grid
           </button>
         </div>
