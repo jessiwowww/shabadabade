@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TEMPERE } from "@/data/themes";
 
-// spicchi dei colori veri delle tempere: li prende da themes.js, così
-// aggiungendone una cambia anche il pallino
-const RUOTA = `conic-gradient(${TEMPERE.map(
-  (t, i) =>
-    `${t.bg} ${(i * 100) / TEMPERE.length}% ${((i + 1) * 100) / TEMPERE.length}%`
-).join(", ")})`;
+// sfumatura continua sui colori veri delle tempere: li prende da
+// themes.js, così aggiungendone una cambia anche il pallino. Il primo
+// colore torna in fondo, o la ruota si chiuderebbe con uno stacco
+const RUOTA = `conic-gradient(${[...TEMPERE, TEMPERE[0]]
+  .map((t, i, a) => `${t.bg} ${Math.round((i * 100) / (a.length - 1))}%`)
+  .join(", ")})`;
 
 /*
   Switch tema: nero / bianco / colore random.
