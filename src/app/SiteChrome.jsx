@@ -11,10 +11,14 @@ export default function SiteChrome({ haProgetti }) {
   const { mode, setMode } = useThemeContext();
 
   /*
-    Niente menù col tasto destro sulle immagini: toglie la voce
-    "salva immagine", che è il modo in cui si portano via nel 99% dei
-    casi. Solo sulle immagini, non su tutta la pagina: bloccare
+    Niente menù col tasto destro né trascinamento fuori dalla pagina:
+    sono i due modi in cui un'immagine si porta via senza saper fare
+    nulla. Solo su immagini e video, non su tutta la pagina: bloccare
     ovunque impedirebbe anche copiare un testo o aprire un link.
+    Il trascinamento si blocca qui e non con `draggable="false"` tag
+    per tag, che si dimentica sulla prossima immagine aggiunta.
+    Resta comunque aggirabile: screenshot e indirizzo del file non si
+    possono impedire, per quello serve la filigrana.
   */
   useEffect(() => {
     const blocca = (e) => {
@@ -24,7 +28,11 @@ export default function SiteChrome({ haProgetti }) {
       }
     };
     document.addEventListener("contextmenu", blocca);
-    return () => document.removeEventListener("contextmenu", blocca);
+    document.addEventListener("dragstart", blocca);
+    return () => {
+      document.removeEventListener("contextmenu", blocca);
+      document.removeEventListener("dragstart", blocca);
+    };
   }, []);
 
   return (
