@@ -7,19 +7,10 @@ import { useThemeContext } from "@/components/ThemeProvider.jsx";
 import HeroArtwork from "@/components/HeroArtwork.jsx";
 import { heroPhotoFor } from "@/data/heroPhotos";
 import { NOME } from "@/data/nomeLettere";
-import { NERO, BIANCO, TEMPERE } from "@/data/themes";
 import { useIsDesktop } from "@/hooks/useIsDesktop";
-import { Macchia } from "@/data/macchia";
-
-const COLORI = [
-  { palette: NERO, mode: "nero" },
-  { palette: BIANCO, mode: "bianco" },
-  ...TEMPERE.map((t) => ({ palette: t, mode: "random" })),
-];
 
 // inclinazione fissa: a caso cambierebbe a ogni render
 const INCLINA = [-6, 4, -3, 7, -5, 3, -7, 5, -4, 6, -3];
-const RUOTA_MACCHIA = [0, 140, 60, 210, 300, 30, 250, 110];
 
 function Lettera({ lettera, i, trascinabile, onSposta }) {
   const contenuto = lettera.svg ? (
@@ -82,18 +73,13 @@ function Lettera({ lettera, i, trascinabile, onSposta }) {
 }
 
 export default function Hero() {
-  const { palette, setMode } = useThemeContext();
+  const { palette } = useThemeContext();
   const isDesktop = useIsDesktop();
   const [fotoMancante, setFotoMancante] = useState(false);
   // cambiando chiave le lettere ripartono dal loro posto
   const [giro, setGiro] = useState(0);
   const [spostate, setSpostate] = useState(false);
   const foto = heroPhotoFor(palette.nome);
-
-  const dipingi = (b, e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    setMode(b.mode, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, b.palette);
-  };
 
   return (
     <section
@@ -136,47 +122,6 @@ export default function Hero() {
           >
             Designer &amp; illustrator. I draw things that stick.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            // su telefono rubavano troppo spazio: lì c'è il selettore in basso
-            className="mt-8 hidden md:block"
-          >
-            <p id="sb-colori" className="text-xs uppercase tracking-[0.2em] text-sb-ink-soft">
-              Paint the page
-            </p>
-            <div role="group" aria-labelledby="sb-colori" className="mt-3 flex flex-wrap gap-1">
-              {COLORI.map((b, i) => {
-                const attivo = palette.nome === b.palette.nome;
-                return (
-                  <motion.button
-                    key={b.palette.nome}
-                    type="button"
-                    data-interactive
-                    onClick={(e) => dipingi(b, e)}
-                    whileHover={{ scale: 1.15, rotate: -10 }}
-                    whileTap={{ scale: 0.85 }}
-                    aria-label={`Paint the page ${b.palette.nome}`}
-                    aria-pressed={attivo}
-                    className="flex h-11 w-11 items-center justify-center"
-                  >
-                    <Macchia
-                      className="h-9 w-9"
-                      rotate={RUOTA_MACCHIA[i % RUOTA_MACCHIA.length]}
-                      colore={b.palette.bg}
-                      bordo={
-                        attivo
-                          ? "var(--sb-accent)"
-                          : "color-mix(in srgb, var(--sb-ink) 40%, transparent)"
-                      }
-                    />
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
             <a
