@@ -104,6 +104,8 @@ function Singolo({ blocco, lato, onZoom }) {
           width={blocco.poster?.larghezza}
           height={blocco.poster?.altezza}
           controls
+          controlsList="nodownload noplaybackrate"
+          disablePictureInPicture
           loop
           muted
           playsInline

@@ -270,31 +270,35 @@ export default function Grid({
         <MacroSelector attiva={macro} onPick={onPickMacro} conteggi={conteggiMacro} />
 
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-sb-ink/15 pt-3">
-          <button
-            type="button"
-            data-interactive
-            onClick={() => setFiltriAperti((a) => !a)}
-            aria-expanded={filtriAperti}
-            aria-controls="sb-filtri"
-            className="inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink"
-          >
-            <span aria-hidden="true" className={`inline-block transition-transform ${filtriAperti ? "rotate-45" : ""}`}>
-              +
-            </span>
-            Filter by tag
-            {activeTags.size > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sb-accent px-1.5 text-[0.7rem] font-semibold text-sb-bg">
-                {activeTags.size}
+          {/* senza tag non c'è niente da filtrare: il comando sparisce
+              invece di aprire un pannello vuoto */}
+          {tags.length > 0 && (
+            <button
+              type="button"
+              data-interactive
+              onClick={() => setFiltriAperti((a) => !a)}
+              aria-expanded={filtriAperti}
+              aria-controls="sb-filtri"
+              className="inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink"
+            >
+              <span aria-hidden="true" className={`inline-block transition-transform ${filtriAperti ? "rotate-45" : ""}`}>
+                +
               </span>
-            )}
-          </button>
+              Filter by tag
+              {activeTags.size > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sb-accent px-1.5 text-[0.7rem] font-semibold text-sb-bg">
+                  {activeTags.size}
+                </span>
+              )}
+            </button>
+          )}
 
           <button
             type="button"
             data-interactive
             onClick={rimescola}
             disabled={projects.length < 2}
-            className="inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink disabled:opacity-40"
+            className="ml-auto inline-flex min-h-11 items-center gap-2 text-sm text-sb-ink-soft transition-colors hover:text-sb-ink disabled:opacity-40"
           >
             <ShuffleIcon />
             Shuffle the grid
@@ -302,7 +306,7 @@ export default function Grid({
         </div>
 
         <AnimatePresence initial={false}>
-          {filtriAperti && (
+          {filtriAperti && tags.length > 0 && (
             <motion.div
               id="sb-filtri"
               initial={{ height: 0, opacity: 0 }}

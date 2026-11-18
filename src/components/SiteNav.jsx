@@ -68,13 +68,15 @@ export default function SiteNav({ haProgetti = false }) {
           staccata ? "border-b border-sb-ink/10" : "border-b border-transparent"
         }`}
       >
-        <Link
+        {/* ancora vera e non <Link>: dal nome si riparte da zero, con
+            la pagina ricaricata davvero e i filtri azzerati */}
+        <a
           href="/"
           data-interactive
           className="inline-flex min-h-11 items-center font-nome text-lg text-sb-ink"
         >
           <span className="text-sb-accent">sha</span>badabade
-        </Link>
+        </a>
 
         <nav aria-label="Main" className="hidden lg:block">
           <ul className="flex items-center gap-1">
