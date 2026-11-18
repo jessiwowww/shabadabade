@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ricordaCopertina } from "@/lib/transizioni";
+import { MISURE, ridotta } from "@/lib/immagini";
 
 const INCLINA = [3, -2.5, 2, -3.5];
 
@@ -56,7 +57,7 @@ function Voce({ cs, i }) {
         >
           <img
             ref={copertina}
-            src={cs.copertina.url}
+            src={ridotta(cs.copertina.url, MISURE.copertina)}
             alt=""
             width={cs.copertina.larghezza}
             height={cs.copertina.altezza}

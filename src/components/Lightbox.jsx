@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
 import { cresciDa } from "@/lib/transizioni";
 import { Play, anteprimaVoce } from "@/components/AlbumViewer.jsx";
+import { MISURE, ridotta, scala } from "@/lib/immagini";
 
 // striscia con aggancio nativo invece di drag a mano: così si vedono
 // entrare le immagini vicine e l'inerzia su telefono è quella di sistema
@@ -226,7 +227,7 @@ export default function Lightbox({
                   {p.video ? (
                     <video
                       src={p.video.url}
-                      poster={p.immagine.url}
+                      poster={ridotta(p.immagine.url, MISURE.pieno)}
                       width={p.video.larghezza}
                       height={p.video.altezza}
                       controls
@@ -239,7 +240,9 @@ export default function Lightbox({
                     />
                   ) : (
                     <img
-                      src={p.immagine.url}
+                      src={ridotta(p.immagine.url, MISURE.pieno)}
+                      srcSet={scala(p.immagine.url, [500, 900, 1400, 1600])}
+                      sizes="(min-width: 1024px) min(60vw, 48rem), 100vw"
                       alt={p.titolo ?? ""}
                       width={p.immagine.larghezza}
                       height={p.immagine.altezza}
@@ -321,7 +324,7 @@ export default function Lightbox({
                           >
                             {src && (
                               <img
-                                src={src}
+                                src={ridotta(src, MISURE.miniatura)}
                                 alt=""
                                 loading="lazy"
                                 decoding="async"

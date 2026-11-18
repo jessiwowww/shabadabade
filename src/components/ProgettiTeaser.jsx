@@ -2,6 +2,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ricordaCopertina } from "@/lib/transizioni";
+import { MISURE, ridotta } from "@/lib/immagini";
 import { pezzi, anno } from "@/components/Progetti.jsx";
 
 const INCLINA = [-5, 2, -2, 4];
@@ -27,7 +28,7 @@ function Polaroid({ cs, i }) {
               della pagina del progetto, da cui cresce */}
           <img
             ref={copertina}
-            src={cs.copertina.url}
+            src={ridotta(cs.copertina.url, MISURE.copertina)}
             alt=""
             width={cs.copertina.larghezza}
             height={cs.copertina.altezza}

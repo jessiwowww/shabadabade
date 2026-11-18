@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
+import { MISURE, ridotta, scala } from "@/lib/immagini";
 
 // l'anteprima di un video è il suo poster; senza poster resta il
 // riquadro col triangolo, che è comunque cliccabile
@@ -175,7 +176,7 @@ export default function AlbumViewer({ project, indiceIniziale = null, onClose })
                   {voce.tipo === "video" ? (
                     <video
                       src={voce.url}
-                      poster={voce.poster?.url}
+                      poster={ridotta(voce.poster?.url, MISURE.pieno)}
                       controls
                       controlsList="nodownload noplaybackrate"
                       disablePictureInPicture
@@ -186,7 +187,9 @@ export default function AlbumViewer({ project, indiceIniziale = null, onClose })
                     />
                   ) : (
                     <img
-                      src={voce.immagine.url}
+                      src={ridotta(voce.immagine.url, MISURE.pieno)}
+                      srcSet={scala(voce.immagine.url, [500, 900, 1400, 1600])}
+                      sizes="(min-width: 640px) calc(100vw - 7rem), calc(100vw - 2rem)"
                       alt={voce.didascalia ?? project.titolo ?? ""}
                       width={voce.immagine.larghezza}
                       height={voce.immagine.altezza}
@@ -232,7 +235,7 @@ export default function AlbumViewer({ project, indiceIniziale = null, onClose })
                       >
                         {src && (
                           <img
-                            src={src}
+                            src={ridotta(src, MISURE.miniatura)}
                             alt=""
                             loading="lazy"
                             decoding="async"

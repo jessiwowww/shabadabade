@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Cuffie, Fiore, Sorriso, Skate } from "@/data/illustrations";
+import { MISURE, ridotta } from "@/lib/immagini";
 
 /*
   Foto e bio arrivano dal server (documento "About" su Sanity, con
@@ -165,7 +166,7 @@ export default function ChiSono({ about }) {
           </div>
 
           <motion.img
-            src={foto.url}
+            src={ridotta(foto.url, MISURE.ritratto)}
             alt="Portrait of Sharon Bertoncello"
             width={foto.larghezza}
             height={foto.altezza}

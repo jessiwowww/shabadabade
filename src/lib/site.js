@@ -11,4 +11,4 @@ const daVercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (daVercel ? `https://${daVercel}` : "https://sharonbertoncello.com");
+  (daVercel ? `https://${daVercel}` : "https://shabadabade.com");

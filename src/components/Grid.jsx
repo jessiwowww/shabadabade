@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Masonry from "react-responsive-masonry";
 import { AnimatePresence, motion } from "framer-motion";
 import { isAutoloadSuppressed } from "../lib/anchorScroll";
+import { MISURE, ridotta, scala } from "../lib/immagini";
 import { useColumnCount } from "../hooks/useColumnCount";
 import MacroSelector from "./MacroSelector.jsx";
 import TagFilters from "./TagFilters.jsx";
@@ -121,7 +122,7 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
           <video
             ref={media}
             src={project.video.url}
-            poster={immagine.url}
+            poster={ridotta(immagine.url, MISURE.griglia)}
             width={project.video.larghezza}
             height={project.video.altezza}
             muted
@@ -134,7 +135,9 @@ function ProjectCard({ project, leaving, onOpen, onOpenAlbum }) {
         ) : (
           <img
             ref={media}
-            src={immagine.url}
+            src={ridotta(immagine.url, MISURE.griglia)}
+            srcSet={scala(immagine.url)}
+            sizes="(min-width: 1600px) 24vw, (min-width: 1024px) 32vw, (min-width: 560px) 48vw, 92vw"
             alt={project.titolo ?? ""}
             width={immagine.larghezza}
             height={immagine.altezza}

@@ -1,4 +1,4 @@
-export const EMAIL = "hello@sharonbertoncello.com";
+export const EMAIL = "bertoncellosharon@gmail.com";
 
 export const SOCIAL = [
   {

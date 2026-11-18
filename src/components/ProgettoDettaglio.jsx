@@ -8,6 +8,7 @@ import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { bloccaScroll } from "@/lib/scrollLock";
 import { cresciDa, prendiCopertina, ricordaCopertina } from "@/lib/transizioni";
 import { pezzi, anno } from "@/components/Progetti.jsx";
+import { MISURE, ridotta, scala } from "@/lib/immagini";
 
 const SOGLIA_TRASCINAMENTO = 80;
 
@@ -63,7 +64,9 @@ function Immagine({ blocco, onZoom, className = "" }) {
       >
         <img
           ref={img}
-          src={blocco.immagine.url}
+          src={ridotta(blocco.immagine.url, MISURE.pieno)}
+          srcSet={scala(blocco.immagine.url, [500, 900, 1400, 1600])}
+          sizes="(min-width: 1024px) 64rem, 100vw"
           alt={blocco.didascalia ?? ""}
           width={blocco.immagine.larghezza}
           height={blocco.immagine.altezza}
@@ -180,7 +183,7 @@ function Zoom({ zoom, onClose }) {
           />
           <img
             ref={img}
-            src={zoom.blocco.immagine.url}
+            src={ridotta(zoom.blocco.immagine.url, MISURE.pieno)}
             alt={zoom.blocco.didascalia ?? ""}
             width={zoom.blocco.immagine.larghezza}
             height={zoom.blocco.immagine.altezza}
@@ -230,7 +233,7 @@ function Prossimo({ successivo, precedente }) {
         <span className="block w-[min(70%,16rem)] -rotate-3 bg-sb-surface p-2 pb-7 shadow-[0_18px_45px_rgba(0,0,0,0.32)] transition-transform duration-500 group-hover:rotate-0 md:w-full">
           <img
             ref={copertina}
-            src={successivo.copertina.url}
+            src={ridotta(successivo.copertina.url, MISURE.copertina)}
             alt=""
             width={successivo.copertina.larghezza}
             height={successivo.copertina.altezza}
