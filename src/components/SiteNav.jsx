@@ -15,7 +15,7 @@ import { EMAIL, mailto } from "@/data/contatti";
 const vociMenu = (haProgetti) => [
   { label: "Work", href: "/#lavori", scroll: false },
   ...(haProgetti ? [{ label: "Projects", href: "/projects" }] : []),
-  { label: "About & contact", href: "/#chi-sono", scroll: false },
+  { label: "About & Contact", href: "/#chi-sono", scroll: false },
 ];
 
 /*

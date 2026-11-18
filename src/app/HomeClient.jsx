@@ -199,9 +199,12 @@ export default function HomeClient({
       />
       <ProgettiTeaser caseStudies={caseStudies} />
       <Supporto onPick={pickCategory} conteggiMacro={conteggiMacro} />
-      {/* vicini: nel menu sono una voce sola */}
-      <ChiSono about={about} />
-      <Contatti />
+      {/* una voce sola nel menu, quindi un blocco solo nella pagina:
+          l'ancora prende tutto, chi sono e come scrivermi */}
+      <div id="chi-sono" className="scroll-mt-16">
+        <ChiSono about={about} />
+        <Contatti />
+      </div>
 
       <Lightbox
         projects={filtered}

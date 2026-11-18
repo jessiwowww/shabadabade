@@ -55,10 +55,12 @@ export default function ChiSono({ about }) {
   const l = LATI[lato];
 
   return (
+    /* l'ancora sta sul blocco che contiene anche i contatti, in
+       HomeClient: qui dentro si entra dall'alto e si continua a
+       leggere fino all'email, senza stacchi */
     <section
-      id="chi-sono"
       style={l.stile}
-      className="relative scroll-mt-16 overflow-hidden bg-sb-bg px-5 py-20 text-sb-ink transition-colors duration-500 sm:px-8 lg:px-12 lg:py-28"
+      className="relative overflow-hidden bg-sb-bg px-5 pb-12 pt-14 text-sb-ink transition-colors duration-500 sm:px-8 lg:px-12 lg:pb-16 lg:pt-16"
     >
       <AnimatePresence>
         {lato === "studio" &&
@@ -117,7 +119,7 @@ export default function ChiSono({ about }) {
           </div>
         </div>
 
-        <div className="mt-12 grid gap-12 md:grid-cols-[1fr_16rem] md:items-start lg:grid-cols-[1fr_18rem]">
+        <div className="mt-8 grid gap-10 md:grid-cols-[1fr_16rem] md:items-start lg:grid-cols-[1fr_18rem]">
           <div>
             <AnimatePresence mode="wait">
               <motion.p

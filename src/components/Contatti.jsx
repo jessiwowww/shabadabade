@@ -25,7 +25,7 @@ export default function Contatti() {
   };
 
   return (
-    <section id="contatti" className="scroll-mt-16 px-5 pb-16 pt-20 sm:px-8 lg:px-12 lg:pt-28">
+    <section id="contatti" className="scroll-mt-16 px-5 pb-16 pt-10 sm:px-8 lg:px-12 lg:pt-14">
       <h2 className="sr-only">Contact</h2>
 
       <motion.div
