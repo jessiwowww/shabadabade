@@ -123,9 +123,9 @@ export default function HomeClient({
   );
   const chiudiAlbum = useCallback(() => setAlbum(null), []);
 
-  // Dalle commissioni: attiva il tag e scorri alla griglia
-  const pickCategory = useCallback((tag) => {
-    setActiveTags((prev) => (prev.has(tag) ? prev : new Set(prev).add(tag)));
+  // Dalle commissioni: apri quella categoria e scorri alla griglia
+  const pickCategory = useCallback((etichetta) => {
+    setMacro(etichetta);
     document.getElementById("lavori")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
@@ -198,7 +198,7 @@ export default function HomeClient({
         onClearTags={clearTags}
       />
       <ProgettiTeaser caseStudies={caseStudies} />
-      <Supporto onPick={pickCategory} />
+      <Supporto onPick={pickCategory} conteggiMacro={conteggiMacro} />
       {/* vicini: nel menu sono una voce sola */}
       <ChiSono about={about} />
       <Contatti />

@@ -43,10 +43,15 @@ export const PRODOTTI = [
   },
 ];
 
-// `tag` deve esistere nei lavori perché il filtro mostri qualcosa
+/*
+  `macro` è l'etichetta di una categoria di src/data/macroCategories.js.
+  Si clicca solo quella che ha davvero dei lavori dentro: le altre
+  restano visibili, perché raccontano cosa Sharon accetta, ma non
+  promettono una galleria che non esiste.
+*/
 export const COMMISSIONI = [
-  { tag: "logo", nome: "Logos", nota: "for businesses that want a face", Disegno: Logo },
-  { tag: "illustration", nome: "Illustrations", nota: "editorial, covers, gifts", Disegno: Matita },
-  { tag: "local graphics", nome: "Local graphics", nota: "posters, signs, markets", Disegno: Bottega },
-  { tag: "invitation", nome: "Invitations", nota: "weddings, parties, occasions", Disegno: Busta },
+  { macro: "Identity", nome: "Logos", nota: "for businesses that want a face", Disegno: Logo },
+  { macro: "Illustration", nome: "Illustrations", nota: "editorial, covers, gifts", Disegno: Matita },
+  { macro: "Image", nome: "Local graphics", nota: "posters, signs, markets", Disegno: Bottega },
+  { macro: "Editorial", nome: "Invitations", nota: "weddings, parties, occasions", Disegno: Busta },
 ];

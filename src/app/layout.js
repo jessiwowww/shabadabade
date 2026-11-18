@@ -52,18 +52,27 @@ export const metadata = {
   metadataBase: new URL(SITE_URL),
   // il nome vero resta accanto: chi la cerca per nome deve trovarla
   title: {
-    default: "shabadabade — Sharon Bertoncello, designer & illustrator",
+    default: "shabadabade — Sharon Bertoncello, multimedia artist",
     template: "%s — shabadabade",
   },
   description:
-    "shabadabade is Sharon Bertoncello, designer and illustrator based in London. Logos, illustrations, local graphics and invitations on commission — plus stickers, posters and postcards to take home.",
+    "shabadabade is Sharon Bertoncello, multimedia artist based in London: design, illustration and performance. Logos, illustrations and commissioned work for people and places.",
   openGraph: {
     type: "website",
     locale: "en_GB",
     siteName: "shabadabade",
     title: "shabadabade — Sharon Bertoncello",
     description:
-      "Designer and illustrator based in London. I draw things that stick.",
+      "Multimedia artist in London. Design, Illustration and Performance.",
+    url: "/",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "shabadabade — Sharon Bertoncello" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "shabadabade — Sharon Bertoncello",
+    description:
+      "Multimedia artist in London. Design, Illustration and Performance.",
+    images: ["/og.jpg"],
   },
   alternates: { canonical: "/" },
 };

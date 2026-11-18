@@ -109,10 +109,12 @@ const ABOUT_QUERY = `*[_type == "chiSono"] | order(_updatedAt desc)[0]{
 }`;
 
 const ABOUT_FALLBACK = {
+  // foto vera di Sharon, non un segnaposto: se il documento About su
+  // Sanity resta vuoto, online non deve finirci la faccia di un'altra
   foto: {
-    url: "https://picsum.photos/seed/sb-ritratto/640/800",
-    larghezza: 640,
-    altezza: 800,
+    url: "/sharon.jpg",
+    larghezza: 1000,
+    altezza: 667,
   },
   bio: `Hey there, welcome! I'm Sharon. Italian roots, blooming in London.
 

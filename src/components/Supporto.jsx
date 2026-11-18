@@ -4,6 +4,14 @@ import { mailto } from "@/data/contatti";
 
 const INCLINA = [-4, 3, -2, 5];
 
+/*
+  Il negozio resta spento finché non c'è merce vera: oggi i prodotti
+  non hanno né prezzo né pagina, e ogni pulsante aprirebbe una mail.
+  Una vetrina che promette quello che non può dare vale meno di una
+  vetrina assente. Per riaccenderlo basta questo `true`.
+*/
+const NEGOZIO_PRONTO = false;
+
 function Prodotto({ p, i }) {
   const href = p.href ?? mailto(`I'd like some ${p.nome.toLowerCase()}`);
   const esterno = !!p.href;
@@ -36,27 +44,55 @@ function Prodotto({ p, i }) {
   );
 }
 
-export default function Supporto({ onPick }) {
+// la riga si apre solo se quella categoria ha dei lavori: le altre
+// restano in elenco, si illuminano al passaggio e basta
+function Commissione({ c, apribile }) {
   return (
     <>
-      <section id="shop" className="scroll-mt-16 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <p className="text-xs uppercase tracking-[0.25em] text-sb-ink-soft">
-          Support my work
-        </p>
-        <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
-          Take a drawing home.
-        </h2>
-        <p className="mt-4 max-w-xl text-lg text-sb-ink-soft">
-          Stickers, posters, postcards and downloads. Every one you buy
-          pays for the next drawing.
-        </p>
+      <span
+        aria-hidden="true"
+        className="h-12 w-12 shrink-0 text-sb-ink-soft transition-[color,transform] duration-300 group-hover:-rotate-12 group-hover:scale-110 group-hover:text-sb-accent sm:h-14 sm:w-14"
+      >
+        <c.Disegno />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-2xl font-bold tracking-tight transition-colors group-hover:text-sb-accent sm:text-3xl">
+          {c.nome}
+        </span>
+        <span className="block text-sm text-sb-ink-soft">{c.nota}</span>
+      </span>
+      {apribile && (
+        <span className="hidden text-sm text-sb-ink-soft transition-transform group-hover:translate-x-1 sm:block">
+          See work <span aria-hidden="true">↑</span>
+        </span>
+      )}
+    </>
+  );
+}
 
-        <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-14 lg:grid-cols-4 lg:gap-x-10">
-          {PRODOTTI.map((p, i) => (
-            <Prodotto key={p.id} p={p} i={i} />
-          ))}
-        </ul>
-      </section>
+export default function Supporto({ onPick, conteggiMacro }) {
+  return (
+    <>
+      {NEGOZIO_PRONTO && (
+        <section id="shop" className="scroll-mt-16 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+          <p className="text-xs uppercase tracking-[0.25em] text-sb-ink-soft">
+            Support my work
+          </p>
+          <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl">
+            Take a drawing home.
+          </h2>
+          <p className="mt-4 max-w-xl text-lg text-sb-ink-soft">
+            Stickers, posters, postcards and downloads. Every one you buy
+            pays for the next drawing.
+          </p>
+
+          <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-14 lg:grid-cols-4 lg:gap-x-10">
+            {PRODOTTI.map((p, i) => (
+              <Prodotto key={p.id} p={p} i={i} />
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section
         id="commissioni"
@@ -71,7 +107,8 @@ export default function Supporto({ onPick }) {
               Or let&apos;s make one together.
             </h2>
             <p className="mt-4 text-sb-ink-soft">
-              Tap one to see that kind of work. Then write to me.
+              This is what I take on. Tap the ones with work behind them —
+              then write to me.
             </p>
             <a
               href={mailto("A commission")}
@@ -83,32 +120,28 @@ export default function Supporto({ onPick }) {
           </div>
 
           <ul className="border-t border-sb-ink/15">
-            {COMMISSIONI.map((c) => (
-              <li key={c.tag} className="border-b border-sb-ink/15">
-                <button
-                  type="button"
-                  data-interactive
-                  onClick={() => onPick(c.tag)}
-                  className="group flex w-full items-center gap-5 py-5 text-left"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="h-12 w-12 shrink-0 text-sb-ink-soft transition-[color,transform] duration-300 group-hover:-rotate-12 group-hover:scale-110 group-hover:text-sb-accent sm:h-14 sm:w-14"
-                  >
-                    <c.Disegno />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-display text-2xl font-bold tracking-tight transition-colors group-hover:text-sb-accent sm:text-3xl">
-                      {c.nome}
-                    </span>
-                    <span className="block text-sm text-sb-ink-soft">{c.nota}</span>
-                  </span>
-                  <span className="hidden text-sm text-sb-ink-soft transition-transform group-hover:translate-x-1 sm:block">
-                    See work <span aria-hidden="true">↑</span>
-                  </span>
-                </button>
-              </li>
-            ))}
+            {COMMISSIONI.map((c) => {
+              const apribile = (conteggiMacro?.get(c.macro) ?? 0) > 0;
+              const riga = "group flex w-full items-center gap-5 py-5 text-left";
+              return (
+                <li key={c.nome} className="border-b border-sb-ink/15">
+                  {apribile ? (
+                    <button
+                      type="button"
+                      data-interactive
+                      onClick={() => onPick(c.macro)}
+                      className={riga}
+                    >
+                      <Commissione c={c} apribile />
+                    </button>
+                  ) : (
+                    <div className={riga}>
+                      <Commissione c={c} apribile={false} />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
