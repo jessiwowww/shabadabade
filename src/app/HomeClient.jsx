@@ -28,8 +28,8 @@ export default function HomeClient({
   const [lightboxId, setLightboxId] = useState(null);
   // riquadro della miniatura cliccata: il lightbox si apre crescendo da lì
   const [origine, setOrigine] = useState(null);
-  // lavoro di cui è aperto l'album (livello 3)
-  const [albumProject, setAlbumProject] = useState(null);
+  // album aperto (livello 3): il lavoro e da quale elemento partire
+  const [album, setAlbum] = useState(null);
 
   // arrivando da un'altra pagina si riparte dall'alto e si scorre
   useEffect(() => {
@@ -116,7 +116,12 @@ export default function HomeClient({
 
   const clearTags = useCallback(() => setActiveTags(new Set()), []);
   const chiudiLightbox = useCallback(() => setLightboxId(null), []);
-  const chiudiAlbum = useCallback(() => setAlbumProject(null), []);
+  // dalla griglia si parte dal primo, da una miniatura dal suo
+  const apriAlbum = useCallback(
+    (project, indice = null) => setAlbum({ project, indice }),
+    []
+  );
+  const chiudiAlbum = useCallback(() => setAlbum(null), []);
 
   // Dalle commissioni: attiva il tag e scorri alla griglia
   const pickCategory = useCallback((tag) => {
@@ -183,7 +188,7 @@ export default function HomeClient({
       <Grid
         projects={filtered}
         onOpen={openProject}
-        onOpenAlbum={setAlbumProject}
+        onOpenAlbum={apriAlbum}
         macro={macro}
         onPickMacro={setMacro}
         conteggiMacro={conteggiMacro}
@@ -212,11 +217,15 @@ export default function HomeClient({
         onPickMacro={setMacro}
         // il lightbox resta aperto sotto: chiudendo l'album ci si
         // ritrova dov'era, non fuori
-        onOpenAlbum={setAlbumProject}
-        sospeso={!!albumProject}
+        onOpenAlbum={apriAlbum}
+        sospeso={!!album}
       />
 
-      <AlbumViewer project={albumProject} onClose={chiudiAlbum} />
+      <AlbumViewer
+        project={album?.project ?? null}
+        indiceIniziale={album?.indice ?? null}
+        onClose={chiudiAlbum}
+      />
     </>
   );
 }

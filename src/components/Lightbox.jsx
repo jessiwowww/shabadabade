@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { bloccaScroll } from "@/lib/scrollLock";
 import { cresciDa } from "@/lib/transizioni";
+import { Play, anteprimaVoce } from "@/components/AlbumViewer.jsx";
 
 // striscia con aggancio nativo invece di drag a mano: così si vedono
 // entrare le immagini vicine e l'inerzia su telefono è quella di sistema
@@ -229,6 +230,8 @@ export default function Lightbox({
                       width={p.video.larghezza}
                       height={p.video.altezza}
                       controls
+                      controlsList="nodownload noplaybackrate"
+                      disablePictureInPicture
                       loop
                       playsInline
                       preload={i === index ? "auto" : "none"}
@@ -285,19 +288,56 @@ export default function Lightbox({
                   );
                 })}
               </div>
+              {/* le miniature dell'album subito sotto la copertina:
+                  si vede cosa c'è dentro prima di decidere di aprirlo */}
               {(project.album?.length ?? 0) > 0 && (
-                <button
-                  type="button"
-                  data-interactive
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenAlbum(project);
-                  }}
-                  className="mt-4 inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-sb-ink/25 px-4 text-sm transition-colors hover:border-sb-accent hover:text-sb-accent"
-                >
-                  See the album
-                  <span className="text-sb-ink-soft">{project.album.length}</span>
-                </button>
+                <div className="mt-5">
+                  <button
+                    type="button"
+                    data-interactive
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenAlbum(project);
+                    }}
+                    className="inline-flex min-h-9 items-center gap-2 text-xs uppercase tracking-[0.18em] text-sb-ink-soft transition-colors hover:text-sb-accent"
+                  >
+                    See the album
+                    <span aria-hidden="true">→</span>
+                  </button>
+                  <ul className="sb-strip mt-2 flex gap-2 overflow-x-auto pb-1">
+                    {project.album.map((voce, i) => {
+                      const src = anteprimaVoce(voce);
+                      return (
+                        <li key={i} className="shrink-0">
+                          <button
+                            type="button"
+                            data-interactive
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenAlbum(project, i);
+                            }}
+                            aria-label={`Open item ${i + 1} of ${project.album.length} in the album`}
+                            className="relative block h-14 w-14 overflow-hidden rounded-[3px] bg-sb-surface opacity-80 transition-opacity hover:opacity-100"
+                          >
+                            {src && (
+                              <img
+                                src={src}
+                                alt=""
+                                loading="lazy"
+                                decoding="async"
+                                draggable="false"
+                                className="h-full w-full select-none object-cover"
+                              />
+                            )}
+                            {voce.tipo === "video" && (
+                              <Play className="absolute inset-0 m-auto h-6 w-6" />
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               )}
 
               <p className="mt-4 text-sm leading-relaxed text-sb-ink-soft">
