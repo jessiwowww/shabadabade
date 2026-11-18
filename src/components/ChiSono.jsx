@@ -17,6 +17,8 @@ const LATI = {
   studio: {
     etichetta: "shabadabade",
     titolo: "Logos, illustrations, local graphics and invitations, drawn by hand for people and places I care about.",
+    // il testo personale arriva da Sanity: qui resta null apposta
+    testo: null,
     voci: [
       ["shabadabade", "Design & illustration, London"],
       ["Commissions", "Available anywhere"],
@@ -26,6 +28,8 @@ const LATI = {
   agenzia: {
     etichetta: "Ogilvy Health",
     titolo: "Presentations and visuals for the healthcare world.",
+    testo:
+      "I craft visual communication for the healthcare world — designing presentations, decks, and event materials that help global health brands communicate with clarity, impact, and consistency.",
     voci: [
       ["Presentation Specialist — Ogilvy Health", "London, current"],
       ["Previously — WPP group", "Design & visual communication"],
@@ -129,7 +133,18 @@ export default function ChiSono({ about }) {
               </motion.p>
             </AnimatePresence>
 
-            <p className="mt-8 max-w-2xl text-lg leading-relaxed">{bio}</p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={lato}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-8 max-w-2xl whitespace-pre-line text-lg leading-relaxed"
+              >
+                {l.testo ?? bio}
+              </motion.p>
+            </AnimatePresence>
 
             <AnimatePresence mode="wait">
               <motion.ul

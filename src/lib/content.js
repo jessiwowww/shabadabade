@@ -1,6 +1,5 @@
 import { sanityClient } from "./sanity";
 import { PROJECTS } from "../data/projects";
-import { CASE_STUDIES } from "../data/caseStudies";
 
 /*
   Dati di esempio per lavori e progetti quando Sanity non ne ha.
@@ -115,7 +114,11 @@ const ABOUT_FALLBACK = {
     larghezza: 640,
     altezza: 800,
   },
-  bio: "I'm Sharon. I've always drawn, and for the past few years I've been doing it in London. As shabadabade I draw logos, illustrations, local graphics and invitations for people and places I care about; at Ogilvy Health I build presentations and visuals for the healthcare world. I like things made by hand, even when they end up on a screen.",
+  bio: `Hey there, welcome! I'm Sharon. Italian roots, blooming in London.
+
+As an open, bubbly and curious soul, I believe in authentic expression in every form it takes. So, I became a Dancer, a Photographer, a Designer, an Illustrator, and a DJ (...more TBC).
+
+Find me where the good vibes are — and let's make something real together.`,
 };
 
 async function query(groq, { etichetta }) {
@@ -136,13 +139,14 @@ export async function getProjects() {
   return [...PROJECTS].sort((a, b) => a.ordine - b.ordine);
 }
 
+/*
+  Niente dati di esempio qui: finché non esiste un progetto vero su
+  Sanity la sezione, la pagina, la voce di menu e le righe della
+  sitemap spariscono tutte da sole, perché guardano questo elenco.
+*/
 export async function getCaseStudies() {
   const data = await query(CASE_STUDIES_QUERY, { etichetta: "progetti" });
-  if (data?.length > 0 || !ESEMPI) return data ?? [];
-  // nei mock l'id è già leggibile: vale anche come slug
-  return [...CASE_STUDIES]
-    .sort((a, b) => a.ordine - b.ordine)
-    .map((cs) => ({ ...cs, slug: cs.slug ?? cs.id }));
+  return data ?? [];
 }
 
 export async function getCaseStudy(slug) {

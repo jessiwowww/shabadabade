@@ -3,13 +3,13 @@ export const EMAIL = "hello@sharonbertoncello.com";
 export const SOCIAL = [
   {
     label: "Instagram",
-    value: "@sharonbertoncello",
-    href: "https://www.instagram.com/sharonbertoncello",
+    value: "@shabadabade",
+    href: "https://www.instagram.com/shabadabade/",
   },
   {
     label: "LinkedIn",
-    value: "in/sharonbertoncello",
-    href: "https://www.linkedin.com/in/sharonbertoncello",
+    value: "in/sharon-bertoncello",
+    href: "https://www.linkedin.com/in/sharon-bertoncello/",
   },
 ];
 

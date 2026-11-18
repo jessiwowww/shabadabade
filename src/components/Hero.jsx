@@ -120,7 +120,7 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="text-lg text-sb-ink sm:text-xl"
           >
-            Designer &amp; illustrator. I draw things that stick.
+            Multimedia artist. Design, Illustration and Performance.
           </motion.p>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
