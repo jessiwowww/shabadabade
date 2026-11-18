@@ -17,7 +17,7 @@ import { MISURE, ridotta } from "@/lib/immagini";
 const LATI = {
   studio: {
     etichetta: "shabadabade",
-    titolo: "Logos, illustrations, local graphics and invitations, drawn by hand for people and places I care about.",
+    titolo: "Hey there, welcome!\nI'm Sharon. Italian roots, blooming in London.",
     // il testo personale arriva da Sanity: qui resta null apposta
     testo: null,
     voci: [
@@ -30,7 +30,7 @@ const LATI = {
     etichetta: "Ogilvy Health",
     titolo: "Presentations and visuals for the healthcare world.",
     testo:
-      "I craft visual communication for the healthcare world — designing presentations, decks, and event materials that help global health brands communicate with clarity, impact, and consistency.",
+      "I craft visual communication for the healthcare world. I design presentations, decks and event materials that help global health brands communicate with clarity, impact and consistency.",
     voci: [
       ["Presentation Specialist — Ogilvy Health", "London, current"],
       ["Previously — WPP group", "Design & visual communication"],
@@ -126,7 +126,7 @@ export default function ChiSono({ about }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3 }}
-                className={`max-w-2xl font-display font-bold leading-tight tracking-tight text-sb-accent ${
+                className={`max-w-2xl whitespace-pre-line font-display font-bold leading-tight tracking-tight text-sb-accent ${
                   lato === "studio" ? "text-3xl sm:text-4xl" : "text-2xl sm:text-3xl"
                 }`}
               >

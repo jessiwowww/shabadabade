@@ -116,11 +116,11 @@ const ABOUT_FALLBACK = {
     larghezza: 1000,
     altezza: 667,
   },
-  bio: `Hey there, welcome! I'm Sharon. Italian roots, blooming in London.
+  // il saluto iniziale vive nel titolo della sezione (ChiSono.jsx):
+  // qui ripeterlo suonerebbe due volte
+  bio: `As an open, bubbly and curious soul, I believe in authentic expression in every form it takes. So, I became a Dancer, a Photographer, a Designer, an Illustrator, and a DJ (...more TBC).
 
-As an open, bubbly and curious soul, I believe in authentic expression in every form it takes. So, I became a Dancer, a Photographer, a Designer, an Illustrator, and a DJ (...more TBC).
-
-Find me where the good vibes are — and let's make something real together.`,
+Find me where the good vibes are, and let's make something real together.`,
 };
 
 async function query(groq, { etichetta }) {

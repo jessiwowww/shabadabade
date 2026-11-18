@@ -107,7 +107,7 @@ export default function TagFilters({
           {ignorati.length === 1
             ? `“${ignorati[0].name}” isn't`
             : `${ignorati.length} selected tags aren't`}{" "}
-          in {macro ?? "this category"} — ignored here.
+          in {macro ?? "this category"}, so it is ignored here.
         </p>
       )}
 

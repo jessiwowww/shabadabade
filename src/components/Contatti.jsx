@@ -38,7 +38,7 @@ export default function Contatti() {
         <div className="p-7 sm:p-10 md:border-r md:border-dashed md:border-sb-ink/25">
           <p className="font-nome text-3xl sm:text-4xl">Hello!</p>
           <p className="mt-5 text-lg leading-relaxed">
-            Got a logo, an invitation or an order in mind? Drop me a line —
+            Got a logo, an invitation or an order in mind? Drop me a line.
             I answer personally.
           </p>
           <p className="mt-6 text-sm text-sb-ink-soft">— Sharon</p>

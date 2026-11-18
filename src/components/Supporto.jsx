@@ -107,7 +107,7 @@ export default function Supporto({ onPick, conteggiMacro }) {
               Or let&apos;s make one together.
             </h2>
             <p className="mt-4 text-sb-ink-soft">
-              This is what I take on. Tap the ones with work behind them —
+              This is what I take on. Tap the ones with work behind them,
               then write to me.
             </p>
             <a
